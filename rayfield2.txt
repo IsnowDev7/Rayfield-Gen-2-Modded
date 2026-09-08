@@ -1517,16 +1517,20 @@ end if am.icon~=nil or am.Icon~=nil then al:SetIcon(am.icon or am.Icon)end end f
 DestroySubtree(al.main)local am=table.find(al.window.tags,al)if am then table.remove(al.window.tags,am)end if#al.window.
 tags==0 then al.window.tagContainer.Visible=false end end return ae end)()end,[27]=function()local aa,ab,ac=a(27)local
 ad return(function(...)local ae={}ae.__index=ae ae.__type='Text'local af,ag,ah,ai,aj=ac(ab.Parent.Parent.utility.moveable),ac(ab.Parent.Parent.utility.locale),16,14,0.45
+local imageResolver=ac(ab.Parent.Parent.utility.image)
 local function normalizeImageSource(source)
-    if type(source)=='number' then return 'rbxassetid://'..tostring(source) end
-    if type(source)~='string' then return '' end
-    if source=='' then return '' end
+    if type(source)=='number' then source='rbxassetid://'..tostring(source) end
+    if type(source)~='string' or source=='' then return '' end
     local numeric=string.match(source,'^rbxassetid://(%d+)$')
-    if numeric then return 'rbxassetid://'..numeric end
+    if numeric then source='rbxassetid://'..numeric end
     local imgur=string.match(source,'https?://(?:www%.)?imgur%.com/([%w]+)')
-    if imgur and not string.find(source,'i.imgur.com',1,true) then return 'https://i.imgur.com/'..imgur..'.png' end
+    if imgur and not string.find(source,'i.imgur.com',1,true) then source='https://i.imgur.com/'..imgur..'.png' end
     local bareImgur=string.match(source,'^imgur%.com/([%w]+)')
-    if bareImgur then return 'https://i.imgur.com/'..bareImgur..'.png' end
+    if bareImgur then source='https://i.imgur.com/'..bareImgur..'.png' end
+    if imageResolver and type(imageResolver.resolve)=='function' then
+        local ok,res=pcall(imageResolver.resolve,source)
+        if ok and type(res)=='string' and res~='' then return res end
+    end
     return source
 end
 local function createRichNode(window,parent,descriptor)
@@ -1537,16 +1541,17 @@ local function createRichNode(window,parent,descriptor)
     for key,value in pairs(props) do
         if key~='type' and key~='class' and key~='ClassName' and key~='properties' and key~='props' and key~='children' and key~='Children' then copy[key]=value end
     end
+    copy.type=nil copy.class=nil copy.image=nil copy.text=nil copy.children=nil copy.Children=nil
     copy.Parent=parent
     copy.BorderSizePixel=if copy.BorderSizePixel==nil then 0 else copy.BorderSizePixel
     copy.BackgroundTransparency=if copy.BackgroundTransparency==nil then 1 else copy.BackgroundTransparency
     if class=='ImageLabel' or class=='ImageButton' then
-        copy.Image=normalizeImageSource(copy.Image or copy.image or '')
+        copy.Image=normalizeImageSource(props.Image or props.image or copy.Image or '')
         copy.ScaleType=copy.ScaleType or Enum.ScaleType.Fit
         copy.Size=copy.Size or UDim2.new(1,0,0,descriptor.height or descriptor.imageHeight or 160)
         copy.AutomaticSize=copy.AutomaticSize or Enum.AutomaticSize.None
     elseif class=='TextLabel' or class=='TextButton' then
-        copy.Text=copy.Text or copy.text or ''
+        copy.Text=props.Text or props.text or copy.Text or ''
         copy.TextWrapped=if copy.TextWrapped==nil then true else copy.TextWrapped
         copy.AutomaticSize=copy.AutomaticSize or Enum.AutomaticSize.Y
         copy.Size=copy.Size or UDim2.new(1,0,0,0)
@@ -1578,7 +1583,7 @@ end
 am.titleRow=am.window:Create('Frame',{Name='Title',Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BorderSizePixel=0,
 BackgroundTransparency=1,LayoutOrder=1,Parent=am.main})am.window:Create('UIListLayout',{FillDirection=Enum.FillDirection
 .Horizontal,Padding=UDim.new(0,6),SortOrder=Enum.SortOrder.LayoutOrder,VerticalAlignment=Enum.VerticalAlignment.Top,
-Parent=am.titleRow})if am.icon then am.iconLabel=am.window:Create('ImageLabel',{Image=am.icon,Size=UDim2.fromOffset(16,
+Parent=am.titleRow})if am.icon then am.iconLabel=am.window:Create('ImageLabel',{Image=normalizeImageSource(am.icon),Size=UDim2.fromOffset(16,
 16),BorderSizePixel=0,BackgroundTransparency=1,ImageTransparency=1,Parent=am.titleRow},{ImageColor3='ContentColor'})end
 am.title=am.window:Create('TextLabel',{Text=ag.t(am.name),Size=UDim2.new(1,if am.icon then-22 else 0,0,0),AutomaticSize=
 Enum.AutomaticSize.Y,BorderSizePixel=0,BackgroundTransparency=1,RichText=true,TextSize=ah,TextWrapped=true,
