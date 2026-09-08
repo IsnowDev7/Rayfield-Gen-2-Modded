@@ -1,0 +1,54 @@
+# Rayfield Gen 2 Modded — Corrected Feature Request
+
+Please study the existing Rayfield Gen 2 source and preserve its current architecture, naming conventions, visual style, and public APIs. Do not rewrite or minify unrelated modules. Every new feature must be optional, backward-compatible, guarded against missing executor APIs, and free of nil function calls.
+
+## Themes
+
+Add three built-in themes with the same complete theme shape as the existing themes:
+
+1. **Damacus** — a purple and blue theme.
+2. **Blahite** — a black and white theme.
+3. **Yelue** — a yellow and blue theme.
+
+Theme lookup must be case-insensitive and must safely fall back to the default theme if a theme is missing or malformed.
+
+## Image sources
+
+Make image handling reliable for numeric Roblox asset IDs, `rbxassetid://`, `rbxasset://`, `rbxthumb://`, direct HTTP/HTTPS `.png`, `.jpg`, and `.jpeg` URLs, and Imgur links. Normalize Imgur page links to a direct image URL where possible. External downloads must use the library's filesystem and asset-resolver abstractions, never an undefined alias. If an executor does not provide `getcustomasset`, keep the original URL instead of throwing an error. Async Roblox avatar downloads must update the ImageLabel through a guarded callback.
+
+## Hold buttons
+
+Expose `Tab:CreateHoldButton` with `HoldTime`/`holdTime`, optional `LineColor`/`lineColor`, and a callback that runs only after the hold completes. Releasing early must cancel the callback and reset the progress indicator. The callback must run through the library's guarded callback path.
+
+## Automatic blur
+
+Blur should be automatic: opening/showing the window enables it, closing with the X disables it, and unloading destroys it. Minimize/restore must not accidentally remove blur while the window remains open. The implementation must be idempotent and must not require a `BlurBackground = true` option.
+
+## Capsule animation
+
+Find the capsule/hold interaction component and add a subtle smooth breathing animation while it is pressed or held. Do not add visible strokes to an otherwise invisible capsule. Stop and reset the animation on release, cancellation, destruction, or unload.
+
+## Tab icon rotation
+
+When `TabIconAnimation = true`, selecting a tab rotates its icon exactly one full turn from 0 to 360 degrees and then resets it to 0. If the option is absent or false, no rotation should occur.
+
+## Profile window
+
+When `ProfileWindow = true`, create a separate Rayfield-style profile card attached to the left side of the main window. It must remain parented to the window so it follows dragging, resizing, minimizing, restoring, and unloading. Display the local player's Roblox thumbnail, display name, `ProfileDescription`, and a clickable `Profilelink`. Copying the link must be guarded when clipboard APIs are unavailable.
+
+Example:
+
+```lua
+local Window = Rayfield:CreateWindow({
+    Name = "Example",
+    Theme = "Damacus",
+    ProfileWindow = true,
+    ProfileDescription = "yooooooooo",
+    Profilelink = "discord.gg/example",
+    TabIconAnimation = true,
+})
+```
+
+## Validation requirements
+
+Before publishing, check every new public method exists, check all three themes resolve, verify no undefined filesystem aliases remain, and verify every optional callback/API is guarded with type checks or `pcall`.
