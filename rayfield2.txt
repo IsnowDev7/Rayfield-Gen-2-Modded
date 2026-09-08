@@ -6,31 +6,10 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at https://mozilla.org/MPL/2.0/.
 --
--- FIX APPLIED: Proper module loader initialization to prevent "attempt to call nil value 3"
-
--- CRITICAL FIX: Define the module loader function BEFORE the module table
-local a
-local moduleLoader_Cache = {}
-
--- Function that loads a module at the given index from the module table
--- This fixes the "attempt to call nil value 3" error
-local function moduleLoader_Initialize(moduleIndex)
-	if moduleLoader_Cache[moduleIndex] then
-		return moduleLoader_Cache[moduleIndex]()
-	end
-	if not a[moduleIndex] then
-		error("Module " .. moduleIndex .. " not found in module table", 2)
-	end
-	local result = a[moduleIndex]()
-	moduleLoader_Cache[moduleIndex] = function() return result end
-	return result
-end
-
--- Now assign it to variable 'a' which is called throughout the code
-a = moduleLoader_Initialize
-
--- NOW define the original module table structure
-local aa,ab,ac,ad,ae,af,ag,ah,ai,aj,ak,al,am,b,c,d,e,f,g,h,i={function()local b,c,d=a(1)local e return(function(
+-- The generated module loader is initialized by module 1 below. Keep `a` as
+-- its forward-declared upvalue; overwriting it before module 1 runs breaks
+-- bootstrap with an attempt to call/index a nil or non-module value.
+local a local aa,ab,ac,ad,ae,af,ag,ah,ai,aj,ak,al,am,b,c,d,e,f,g,h,i={function()local b,c,d=a(1)local e return(function(
 ...)local f,g,h,i,j=d(c.utility.variables),d(c.utility.image),d(c.utility.locale),d(c.utility.constants),d(c.types)
 export type Theme=j.Theme export type Translator=j.Translator export type Translations=j.Translations export type
 WindowConfiguration=j.WindowConfiguration export type WindowProps=j.WindowProps export type TabProps=j.TabProps export
