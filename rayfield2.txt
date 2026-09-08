@@ -1,5 +1,5 @@
 -- Rayfield Gen2 v1.2.0-preview (2b179d4, 2026-08-31)
--- loadstring(game:HttpGet("https://raw.githubusercontent.com/IsnowDev7/Rayfield-Gen-2-Modded/refs/heads/main/Rayfieldgen2modded.txt"))()
+-- loadstring(game:HttpGet("https://raw.githubusercontent.com/IsnowDev7/Rayfield-Gen-2-Modded/refs/heads/main/rayfield2.txt"))()
 --
 -- Copyright (c) 2026 Corridon Capital
 -- This Source Code Form is subject to the terms of the Mozilla Public
