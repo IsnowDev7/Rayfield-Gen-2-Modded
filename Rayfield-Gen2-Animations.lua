@@ -1399,7 +1399,7 @@ end function ae._register(c,d)table.insert(c.elements,d)ah(d,#c.elements*10)c.wi
 hidden then d:_setShown(true,true)end return d end function ae.CreateButton(c,d)return c:_register(ac(ab.Parent.button).
 new(c,d))end function ae.CreateToggle(c,d)return c:_register(ac(ab.Parent.toggle).new(c,d))end function ae.CreateSwitch(
 c,d)return c:CreateToggle(d)end function ae.CreateSection(c,d)return c:_register(ac(ab.Parent.section).new(c,d))end
-function ae.CreateText(c,d)return c:_register(ac(ab.Parent.text).new(c,d))end function ae.CreateDivider(c,d)return c:
+function ae.CreateText(c,d)return c:_register(ac(ab.Parent.text).new(c,d))end function ae.CreateParagraph(c,d)return c:CreateText(d)end function ae.CreateImage(c,d)return c:CreateText(if typeof(d)=='table'then{ImageParagraph=d.Image or d.image or d.ImageParagraph or d.imageParagraph}else{ImageParagraph=d})end function ae.AddImage(c,d)return c:CreateImage(d)end function ae.CreateDivider(c,d)return c:
 _register(ac(ab.Parent.divider).new(c,d))end function ae.CreateProgress(c,d)return c:_register(ac(ab.Parent.progress).
 new(c,d))end function ae.CreateConsole(c,d)return c:_register(ac(ab.Parent.console).new(c,d))end function ae.CreateStat(
 c,d)return c:_register(ac(ab.Parent.stat).new(c,d))end function ae.CreateSlider(c,d)return c:_register(ac(ab.Parent.
@@ -1518,7 +1518,7 @@ tags==0 then al.window.tagContainer.Visible=false end end return ae end)()end,[2
 ad return(function(...)local ae={}ae.__index=ae ae.__type='Text'local af,ag,ah,ai,aj=ac(ab.Parent.Parent.utility.
 moveable),ac(ab.Parent.Parent.utility.locale),16,14,0.45 function ae.new(ak,al)al=if typeof(al)=='table'then al else{}
 local am=setmetatable({tab=assert(ak,'Missing argument #1 (Tab expected)'),window=ak.window,name=tostring(al.name or al.
-Name or''),text=tostring(al.text or al.Text or''),icon=al.icon or al.Icon},ae)am.main=am.window:Create('Frame',{Size=
+Name or''),text=tostring(al.text or al.Text or''),icon=al.icon or al.Icon,imageParagraph=al.imageParagraph or al.ImageParagraph or al.image or al.Image,content=al.content or al.Content or al.instances or al.Instances},ae)am.main=am.window:Create('Frame',{Size=
 UDim2.new(1,-20,0,0),AutomaticSize=Enum.AutomaticSize.Y,BorderSizePixel=0,Name=if am.name~=''then am.name else'Text',
 BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,Parent=am.tab.tabPage},{BackgroundTransparency=
 'ElementTransparency'})am.stroke=am.window:StyleElementBody(am.main)am.window:Create('UIPadding',{PaddingTop=UDim.new(0,
@@ -1532,14 +1532,10 @@ Parent=am.titleRow})if am.icon then am.iconLabel=am.window:Create('ImageLabel',{
 am.title=am.window:Create('TextLabel',{Text=ag.t(am.name),Size=UDim2.new(1,if am.icon then-22 else 0,0,0),AutomaticSize=
 Enum.AutomaticSize.Y,BorderSizePixel=0,BackgroundTransparency=1,RichText=true,TextSize=ah,TextWrapped=true,
 TextXAlignment=Enum.TextXAlignment.Left,LayoutOrder=1,TextTransparency=1,Parent=am.titleRow},{TextColor3='TitlingColor',
-FontFace='Font'})am.body=am.window:Create('TextLabel',{Text=ag.t(am.text),Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.
-AutomaticSize.Y,BorderSizePixel=0,BackgroundTransparency=1,RichText=true,TextSize=ai,TextWrapped=true,TextXAlignment=
-Enum.TextXAlignment.Left,LayoutOrder=2,TextTransparency=1,Parent=am.main},{TextColor3='ContentColor',FontFace='Font'})am
-:_applyPresence()return am end function ae._applyPresence(ak)ak.titleRow.Visible=ak.name~=''or ak.icon~=nil ak.body.
-Visible=ak.text~=''end function ae.Set(ak,al)ak.text=tostring(al)ak.window:_bindLocale(ak.body,'Text',ak.text)ak:
+FontFace='Font'})am.body=am.window:Create('TextLabel',{Text=ag.t(am.text),Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BorderSizePixel=0,BackgroundTransparency=1,RichText=true,TextSize=ai,TextWrapped=true,TextXAlignment=Enum.TextXAlignment.Left,LayoutOrder=2,TextTransparency=1,Parent=am.main},{TextColor3='ContentColor',FontFace='Font'})if am.imageParagraph then am.imageLabel=am.window:Create('ImageLabel',{Image=am.imageParagraph,Size=UDim2.new(1,0,0,160),BorderSizePixel=0,BackgroundTransparency=1,ScaleType=Enum.ScaleType.Fit,LayoutOrder=3,ImageTransparency=1,Parent=am.main})end if am.content then am.contentFrame=am.window:Create('Frame',{Name='ParagraphContent',Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BorderSizePixel=0,BackgroundTransparency=1,LayoutOrder=4,Parent=am.main})am.window:Create('UIListLayout',{FillDirection=Enum.FillDirection.Vertical,Padding=UDim.new(0,6),SortOrder=Enum.SortOrder.LayoutOrder,Parent=am.contentFrame})local function build(value,parent)if typeof(value)=='Instance' then value.Parent=parent return value end if typeof(value)~='table' then return nil end local className=value.ClassName or value.className or value.Type or value.type if type(className)~='string' then return nil end local props={}for key,val in value do if key~='ClassName' and key~='className' and key~='Type' and key~='type' and key~='Children' and key~='children' then props[key]=val end end props.Parent=parent local object=am.window:Create(className,props)for _,child in value.Children or value.children or{} do build(child,object)end return object end for _,value in ipairs(am.content) do build(value,am.contentFrame)end end am:_applyPresence()return am end function ae._applyPresence(ak)ak.titleRow.Visible=ak.name~=''or ak.icon~=nil ak.body.Visible=ak.text~=''or ak.imageParagraph~=nil or ak.contentFrame~=nil end function ae.Set(ak,al)ak.text=tostring(al)ak.window:_bindLocale(ak.body,'Text',ak.text)ak:
 _applyPresence()end function ae.SetTitle(ak,al)ak.name=tostring(al)ak.window:_bindLocale(ak.title,'Text',ak.name)ak:
 _applyPresence()end function ae._setShown(ak,al,am)if al then ak.window:_revealCommon(ak,am)else ak.window:_hideCommon(
-ak,am)end ak.window:_reveal(ak.body,{TextTransparency=if al then aj else 1},am)end af(ae)return ae end)()end,[28]=
+ak,am)end ak.window:_reveal(ak.body,{TextTransparency=if al then aj else 1},am)if ak.imageLabel then ak.window:_reveal(ak.imageLabel,{ImageTransparency=if al then 0 else 1},am)end end af(ae)return ae end)()end,[28]=
 function()local aa,ab,ac=a(28)local ad return(function(...)local ae={}ae.__index=ae ae.__type='Toast'local af=ab.Parent.
 Parent.utility local ag,ah,ai,aj,ak,al,am,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r=ac(af.variables),ac(af.functions),ac(af.
 constants),ac(af.image),ac(af.HapticEngine),TweenInfo.new(0.6,Enum.EasingStyle.Exponential,Enum.EasingDirection.Out),
