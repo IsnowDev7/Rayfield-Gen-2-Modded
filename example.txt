@@ -52,3 +52,54 @@ local Window = Rayfield:CreateWindow({
 ## Validation requirements
 
 Before publishing, check every new public method exists, check all three themes resolve, verify no undefined filesystem aliases remain, and verify every optional callback/API is guarded with type checks or `pcall`.
+
+
+## New feature usage
+
+```lua
+local Window = Rayfield:CreateWindow({
+    Name = "Rarity Showcase",
+    Theme = "Default",
+    ThemeAnimation = {"Cobalt", "Default"},
+    TransitionTime = "5 seconds",
+    ShinyEffect = true,
+})
+
+local Tab = Window:CreateTab({Name = "Rewards"})
+
+Tab:CreateDropdown({
+    Name = "Reward rarity",
+    Options = {
+        {Name = "Common", Color = Color3.fromRGB(190, 190, 190)},
+        {Name = "Rare", Color = Color3.fromRGB(80, 160, 255)},
+        {Name = "Epic", Color = Color3.fromRGB(190, 90, 255)},
+        {Name = "Legendary", Color = Color3.fromRGB(255, 190, 60)},
+    },
+    Callback = function(value)
+        print("Selected rarity:", value)
+    end,
+})
+
+Tab:CreateText({
+    Name = "Reward details",
+    Text = "This paragraph grows with wrapped text and can contain Roblox GUI instances.",
+    Instances = {
+        {
+            ClassName = "Frame",
+            Size = UDim2.new(1, 0, 0, 34),
+            BackgroundTransparency = 1,
+            Children = {
+                {
+                    ClassName = "TextLabel",
+                    Text = "Instance content follows the paragraph width.",
+                    TextSize = 14,
+                    TextColor3 = Color3.fromRGB(255, 255, 255),
+                    BackgroundTransparency = 1,
+                },
+            },
+        },
+    },
+})
+```
+
+`ThemeAnimation` accepts either one theme name or an ordered table of theme names. `TransitionTime` accepts seconds as a number or a string such as `"5 seconds"`. Dropdown options remain backward-compatible with plain strings; table options use `Name`/`Text` plus an optional `Color`/`LabelColor`.

@@ -440,7 +440,7 @@ d(g.locale),d(g.HapticEngine),d(g.windowSizing),d(g.lockable)local p,q,r,s,t,u,v
 .check,k.icons.dot,k.icons.search,UDim.new(0,12),UDim.new(0,7),30,38,38,5,2,41,6,7,6 local E,F,G,H,I,J,K=C+D,4,22,
 TweenInfo.new(0.2,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),TweenInfo.new(0.25,Enum.EasingStyle.Quint,Enum.
 EasingDirection.Out),0.4,TweenInfo.new(0.35,Enum.EasingStyle.Exponential,Enum.EasingDirection.Out)local function L(M)
-local N,O={},{}for P,Q in M do if typeof(Q)=='string'and not N[Q]then N[Q]=true table.insert(O,Q)end end return O end
+local N,O={},{}for P,Q in M do local R=if typeof(Q)=='table'then Q.name or Q.Name or Q.text or Q.Text else Q if typeof(R)=='string'and not N[R]then N[R]=true table.insert(O,R)end end return O end
 local function M(N,O)if N==nil then return{}end if typeof(N)=='string'then return{N}end if typeof(N)=='table'then local
 P=L(N)if not O and#P>1 then return{P[1]}end return P end return{}end local function N(O,P)local Q={}for R,S in O do if
 table.find(P,S)then table.insert(Q,S)end end return Q end local function O(P,Q)if#P~=#Q then return false end for R,S in
@@ -451,7 +451,7 @@ setmetatable({tab=assert(P,'Missing argument #1 (Tab expected)'),window=P.window
 ,flag=Q.flag or Q.Flag or(not(Q.forgetState or Q.ForgetState or P.forgetState)and i.deriveFlagFromName(Q.name or Q.Name
 or'Dropdown')or nil),callback=Q.callback or Q.Callback or function()end,options=L(R),multiSelect=S,placeholderText=l.
 resolve(Q.placeholder or Q.Placeholder or'None'),value=M(Q.value or Q.Value or Q.currentOption or Q.CurrentOption,S),
-_isOpen=false,_optionFrames={}},f)T._desiredValue=T.value T.value=N(T.value,T.options)T.window:_registerControl(T)T.main
+_isOpen=false,_optionFrames={},optionColors={}},f)for _,option in R do if typeof(option)=='table'then local label=option.name or option.Name or option.text or option.Text local color=option.color or option.Color or option.labelColor or option.LabelColor if typeof(label)=='string'and typeof(color)=='Color3'then T.optionColors[label]=color end end end T._desiredValue=T.value T.value=N(T.value,T.options)T.window:_registerControl(T)T.main
 =T.window:Create('Frame',{Size=UDim2.new(1,-20,0,41),BorderSizePixel=0,Name=T.name,BackgroundTransparency=1,Parent=T.tab
 .tabPage})T.top=T.window:Create('Frame',{Size=UDim2.new(1,0,0,41),Position=UDim2.fromScale(0,0),BorderSizePixel=0,
 BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,ZIndex=1,Parent=T.main},{BackgroundTransparency=
@@ -498,7 +498,7 @@ local function V(W,X)local Y=U(W.name)local Z,_,aa,ab=if T._isOpen then(Y and 0.
 Transparency=ab}):Play()else W.frame.BackgroundTransparency=Z W.title.TextTransparency=_ W.checkIcon.ImageTransparency=
 aa W.stroke.Transparency=ab end end local function aa()if T.multiSelect then local ab=#T.value if ab==0 then T.
 selectedLabel.Text=T.placeholderText elseif ab==1 then T.selectedLabel.Text=T.value[1]else T.selectedLabel.Text=l.
-resolve'Various'end else T.selectedLabel.Text=T.value[1]or T.placeholderText end end T._renderOptionState=V T.
+resolve'Various'end else T.selectedLabel.Text=T.value[1]or T.placeholderText end local selected=T.value[1]and T.optionColors[T.value[1]] T.selectedLabel.TextColor3=selected or T.window.theme.ContentColor end T._renderOptionState=V T.
 _updateSelectedLabel=aa local function ab(ac)local W=T.window:Create('Frame',{Size=UDim2.new(1,-12,0,x),BorderSizePixel=
 0,LayoutOrder=#T._optionFrames+1,BackgroundTransparency=1,Parent=T.list},{BackgroundColor3='DropdownHighlight'})local X,
 Y,Z,_=T.window:Create('UICorner',{CornerRadius=u,Parent=W}),T.window:Create('UIStroke',{Color=Color3.fromRGB(255,255,255
@@ -510,7 +510,7 @@ VerticalAlignment.Center,SortOrder=Enum.SortOrder.LayoutOrder,Parent=_})local ad
 'rbxassetid://'..tostring(q),Size=UDim2.fromOffset(16,16),BorderSizePixel=0,BackgroundTransparency=1,ImageTransparency=1
 ,ZIndex=5,Parent=_},{ImageColor3='ContentColor'}),T.window:Create('TextLabel',{Text=ac,Size=UDim2.fromOffset(170,16),
 BorderSizePixel=0,BackgroundTransparency=1,TextSize=16,TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=true,
-LayoutOrder=1,TextTransparency=1,ZIndex=5,Parent=_},{TextColor3='ContentColor',FontFace='Font'})local af={name=ac,frame=
+LayoutOrder=1,TextTransparency=1,ZIndex=5,Parent=_},{TextColor3='ContentColor',FontFace='Font'})if T.optionColors[ac]then ae.TextColor3=T.optionColors[ac]end local af={name=ac,frame=
 W,interact=Z,title=ae,checkIcon=ad,container=_,stroke=Y,corner=X,connections={}}table.insert(af.connections,T.window:
 ConnectFor(T,W.MouseEnter,function()if not T._isOpen or not T.window:_interactive()then return end if U(af.name)then
 return end h.tweenService:Create(W,TweenInfo.new(0.2,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{
@@ -1520,7 +1520,7 @@ Parent=am.titleRow})if am.icon then am.iconLabel=am.window:Create('ImageLabel',{
 am.title=am.window:Create('TextLabel',{Text=ag.t(am.name),Size=UDim2.new(1,if am.icon then-22 else 0,0,0),AutomaticSize=
 Enum.AutomaticSize.Y,BorderSizePixel=0,BackgroundTransparency=1,RichText=true,TextSize=ah,TextWrapped=true,
 TextXAlignment=Enum.TextXAlignment.Left,LayoutOrder=1,TextTransparency=1,Parent=am.titleRow},{TextColor3='TitlingColor',
-FontFace='Font'})am.body=am.window:Create('TextLabel',{Text=ag.t(am.text),Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BorderSizePixel=0,BackgroundTransparency=1,RichText=true,TextSize=ai,TextWrapped=true,TextXAlignment=Enum.TextXAlignment.Left,LayoutOrder=2,TextTransparency=1,Parent=am.main},{TextColor3='ContentColor',FontFace='Font'})if am.imageParagraph then am.imageLabel=am.window:Create('ImageLabel',{Image=am.imageParagraph,Size=UDim2.new(1,0,0,160),BorderSizePixel=0,BackgroundTransparency=1,ScaleType=Enum.ScaleType.Fit,LayoutOrder=3,ImageTransparency=1,Parent=am.main})end if am.content then am.contentFrame=am.window:Create('Frame',{Name='ParagraphContent',Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BorderSizePixel=0,BackgroundTransparency=1,LayoutOrder=4,Parent=am.main})am.window:Create('UIListLayout',{FillDirection=Enum.FillDirection.Vertical,Padding=UDim.new(0,6),SortOrder=Enum.SortOrder.LayoutOrder,Parent=am.contentFrame})local function build(value,parent)if typeof(value)=='Instance' then value.Parent=parent return value end if typeof(value)~='table' then return nil end local className=value.ClassName or value.className or value.Type or value.type if type(className)~='string' then return nil end local props={}for key,val in value do if key~='ClassName' and key~='className' and key~='Type' and key~='type' and key~='Children' and key~='children' then props[key]=val end end props.Parent=parent local object=am.window:Create(className,props)for _,child in value.Children or value.children or{} do build(child,object)end return object end for _,value in ipairs(am.content) do build(value,am.contentFrame)end end am:_applyPresence()return am end function ae._applyPresence(ak)ak.titleRow.Visible=ak.name~=''or ak.icon~=nil ak.body.Visible=ak.text~=''or ak.imageParagraph~=nil or ak.contentFrame~=nil end function ae.Set(ak,al)ak.text=tostring(al)ak.window:_bindLocale(ak.body,'Text',ak.text)ak:
+FontFace='Font'})am.body=am.window:Create('TextLabel',{Text=ag.t(am.text),Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BorderSizePixel=0,BackgroundTransparency=1,RichText=true,TextSize=ai,TextWrapped=true,TextXAlignment=Enum.TextXAlignment.Left,LayoutOrder=2,TextTransparency=1,Parent=am.main},{TextColor3='ContentColor',FontFace='Font'})if am.imageParagraph then am.imageLabel=am.window:Create('ImageLabel',{Image=am.imageParagraph,Size=UDim2.new(1,0,0,160),BorderSizePixel=0,BackgroundTransparency=1,ScaleType=Enum.ScaleType.Fit,LayoutOrder=3,ImageTransparency=1,Parent=am.main})end if am.content then am.contentFrame=am.window:Create('Frame',{Name='ParagraphContent',Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BorderSizePixel=0,BackgroundTransparency=1,LayoutOrder=4,Parent=am.main})am.window:Create('UIPadding',{PaddingTop=UDim.new(0,2),PaddingBottom=UDim.new(0,2),Parent=am.contentFrame})am.window:Create('UIListLayout',{FillDirection=Enum.FillDirection.Vertical,Padding=UDim.new(0,6),SortOrder=Enum.SortOrder.LayoutOrder,Parent=am.contentFrame})local function build(value,parent)if typeof(value)=='Instance' then value.Parent=parent if value:IsA('GuiObject')then if value:IsA('TextLabel')or value:IsA('TextButton')or value:IsA('TextBox')then value.TextWrapped=true value.AutomaticSize=Enum.AutomaticSize.Y value.Size=UDim2.new(1,0,0,value.Size.Y.Offset)elseif value.Size.X.Scale==0 then value.Size=UDim2.new(1,value.Size.X.Offset,value.Size.Y.Scale,value.Size.Y.Offset)end end return value end if typeof(value)~='table' then return nil end local className=value.ClassName or value.className or value.Type or value.type if type(className)~='string' then return nil end local props={}for key,val in value do if key~='ClassName' and key~='className' and key~='Type' and key~='type' and key~='Children' and key~='children' then props[key]=val end end props.Parent=parent local object=am.window:Create(className,props)if object:IsA('GuiObject')then if object:IsA('TextLabel')or object:IsA('TextButton')or object:IsA('TextBox')then object.TextWrapped=true object.AutomaticSize=Enum.AutomaticSize.Y object.Size=UDim2.new(1,0,0,object.Size.Y.Offset)elseif object.Size.X.Scale==0 then object.Size=UDim2.new(1,object.Size.X.Offset,object.Size.Y.Scale,object.Size.Y.Offset)end end for _,child in value.Children or value.children or{} do build(child,object)end return object end for _,value in ipairs(am.content) do build(value,am.contentFrame)end end am:_applyPresence()return am end function ae._applyPresence(ak)ak.titleRow.Visible=ak.name~=''or ak.icon~=nil ak.body.Visible=ak.text~=''or ak.imageParagraph~=nil or ak.contentFrame~=nil end function ae.Set(ak,al)ak.text=tostring(al)ak.window:_bindLocale(ak.body,'Text',ak.text)ak:
 _applyPresence()end function ae.SetTitle(ak,al)ak.name=tostring(al)ak.window:_bindLocale(ak.title,'Text',ak.name)ak:
 _applyPresence()end function ae._setShown(ak,al,am)if al then ak.window:_revealCommon(ak,am)else ak.window:_hideCommon(
 ak,am)end ak.window:_reveal(ak.body,{TextTransparency=if al then aj else 1},am)if ak.imageLabel then ak.window:_reveal(ak.imageLabel,{ImageTransparency=if al then 0 else 1},am)end end af(ae)return ae end)()end,[28]=
@@ -1711,7 +1711,7 @@ aj.setActive(I.locale or I.Locale or aj.detect())local J=I.fallbackFont or I.Fal
 end local K=z(I.sidebarLayout or I.SidebarLayout)local L=setmetatable({name=I.name or I.Name or'Rayfield Window',
 subheading=I.subtitle or I.Subtitle,layout=K,size=w(K.mode),instances={},connections={},icon=I.icon or I.Icon,showName=I
 .showName or I.ShowName or'Rayfield',showIcon=I.showIcon or I.ShowIcon or ai.icons.rayfield,showIconOnly=I.showIconOnly
-or I.ShowIconOnly or false,profileText=I.profile or I.Profile,blurBackground=I.BlurBackground==true, capsuleAnimation=I.CapsuleAnimation==true,iconTabAnimation=false,themeProperties={},localeProperties={},tabs={},tabSections
+or I.ShowIconOnly or false,profileText=I.profile or I.Profile,blurBackground=I.BlurBackground==true, capsuleAnimation=I.CapsuleAnimation==true,shinyEffect=I.ShinyEffect==true,themeAnimation=I.ThemeAnimation or I.themeAnimation,transitionTime=tonumber(I.TransitionTime)or tonumber(I.transitionTime)or(type(I.TransitionTime)=='string'and tonumber(string.match(I.TransitionTime,'%d+%.?%d*')))or(type(I.transitionTime)=='string'and tonumber(string.match(I.transitionTime,'%d+%.?%d*')))or 0.5,iconTabAnimation=false,themeProperties={},localeProperties={},tabs={},tabSections
 ={},tags={},selectedTab=nil,theme=H(I.theme or I.Theme),controls={},configuration=(function()local L=I.configuration or
 I.Configuration if not L then return{}end return{autoSave=L.autoSave or L.AutoSave,autoLoad=L.autoLoad or L.AutoLoad,
 fileName=L.fileName or L.FileName,customFolder=L.customFolder or L.CustomFolder}end)()},h)L.Flags=setmetatable({},{
@@ -1727,7 +1727,7 @@ UDim2.new(0.5,0,0.5,0),Size=UDim2.fromOffset((L.size.X.Offset-50),0),BackgroundT
 screenGui})L.drag=ac(ab.Parent.drag).new(L)L.windowCorner=L:Create('UICorner',{Parent=L.main},{CornerRadius=
 'CornerRoundness'})L.windowStroke=L:Create('UIStroke',{Transparency=1,Parent=L.main},{Color='SurfaceStroke'})L.
 windowGradient=L:Create('UIGradient',{Rotation=270,Offset=Vector2.new(0,-0.1),Parent=L.main},{Color={'WindowColor',ag.
-toColorSequence}})L.bottomFade=L:Create('Frame',{BackgroundColor3=Color3.fromRGB(255,255,255),BorderSizePixel=0,
+toColorSequence}})if L.shinyEffect then L.shinyOverlay=L:Create('Frame',{Name='ShinyEffect',Size=UDim2.fromScale(1,1),BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=0.93,BorderSizePixel=0,ZIndex=0,ClipsDescendants=true,Parent=L.main})L.shinyGradient=L:Create('UIGradient',{Rotation=90,Offset=Vector2.new(0,-1.5),Color=ColorSequence.new(Color3.fromRGB(255,255,255)),Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(0.46,0.92),NumberSequenceKeypoint.new(0.5,0.45),NumberSequenceKeypoint.new(0.54,0.92),NumberSequenceKeypoint.new(1,1)},Parent=L.shinyOverlay})end L.bottomFade=L:Create('Frame',{BackgroundColor3=Color3.fromRGB(255,255,255),BorderSizePixel=0,
 AnchorPoint=Vector2.new(1,1),Position=UDim2.fromScale(1,1),Size=L.layout.fadeSize,ZIndex=ai.zIndex.bottomFade,
 BackgroundTransparency=1,Parent=L.main})L.bottomFadeCorner=L:_roundCorners(L.bottomFade,L.layout.fadeCorners)L.
 bottomFadeGradient=L:Create('UIGradient',{Rotation=270,Offset=Vector2.new(0,0.2),Transparency=L.layout.fadeTransparency,
@@ -1781,16 +1781,16 @@ settings,order=3,linkedTab=L.rfSettings,callback=function()L.rfSettings:Select()
 unloaded=false L.minimised=false L.hidden=true L.animating=false L._revealing=false L.hasShownOnce=false L.
 _collapsedShown=false L:LoadSettings()if L.layout.mode=='sidebar'then e.reflowProfile(L)e.setSubtitle(L,L.profileText)
 end al.setContainer(L.screenGui)al.setEnabled(L.settings.haptics)c.buildCollapsedFace(L)L:_bindKeybind()L:
-_bindMouseOverride()L:_bindTopbarDrag()L:_watchViewport()L:_buildSettingsUI()L:_syncLiveAnimation()return L end function
+_bindMouseOverride()L:_bindTopbarDrag()L:_watchViewport()L:_buildSettingsUI()L:_syncLiveAnimation()L:_syncShinyEffect()if L.themeAnimation then local sequence=if typeof(L.themeAnimation)=='table'then L.themeAnimation else{L.themeAnimation}task.defer(function()for _,target in sequence do if L.unloaded then break end L:ChangeTheme(target,L.transitionTime)task.wait(L.transitionTime+0.15)end end)end return L end function h._syncShinyEffect(I)if not I.shinyEffect or not I.shinyGradient then return end if I._shinyAnimating then return end I._shinyAnimating=true I._shinyGeneration=(I._shinyGeneration or 0)+1 local J=I._shinyGeneration task.spawn(function()while I._shinyGeneration==J and not I.unloaded do I.shinyGradient.Offset=Vector2.new(0,-1.5)local K=f.tweenService:Create(I.shinyGradient,TweenInfo.new(2.8,Enum.EasingStyle.Quint,Enum.EasingDirection.InOut),{Offset=Vector2.new(0,1.5)})I._shinyTween=K K:Play()K.Completed:Wait()task.wait(0.7)end I._shinyAnimating=false I._shinyTween=nil end)end function
 h._syncLiveAnimation(I)if not I.theme.LiveAnimation then I._liveAnimating=false return end if I._liveAnimating then
 return end I._liveAnimating=true I._liveGeneration=(I._liveGeneration or 0)+1 local J=I._liveGeneration task.spawn(
 function()local K,L=true,TweenInfo.new(10,Enum.EasingStyle.Quint,Enum.EasingDirection.Out)while I._liveGeneration==J and
 I._liveAnimating and not I.unloaded do local M=f.tweenService:Create(I.windowGradient,L,{Offset=Vector2.new(if K then
 0.4 else-0.2,0),Rotation=(if K then 220 else 280)})I._liveTween=M M:Play()M.Completed:Wait()K=not K end if I.
-_liveGeneration==J then I._liveAnimating=false I._liveTween=nil end end)end function h.ChangeTheme(I,J)local K=if
+_liveGeneration==J then I._liveAnimating=false I._liveTween=nil end end)end function h.ChangeTheme(I,J,K)local duration=tonumber(K)or I.transitionTime or 0.5 local K=if
 typeof(J)=='table'then J else H(J)for L,M in K do I.theme[L]=B(L,M)end if typeof(J)=='table'then F(I.theme,K)end for L,M
 in I.themeProperties do for N,O in M do local P=if typeof(O)=='table'then O[2](I.theme[O[1] ])else I.theme[O]if typeof(P
-)=='Color3'or typeof(P)=='number'then f.tweenService:Create(L,TweenInfo.new(0.5,Enum.EasingStyle.Quint,Enum.
+)=='Color3'or typeof(P)=='number'then f.tweenService:Create(L,TweenInfo.new(duration,Enum.EasingStyle.Quint,Enum.
 EasingDirection.Out),{[N]=P}):Play()else L[N]=P end end end if I.hidden then I._themeRefreshPending=true else I:
 _refreshElementThemes()end I:_syncLiveAnimation()end function h._refreshElementThemes(I)for J,K in I.tabs do for L,M in
 K.elements do if M._refreshTheme then M:_refreshTheme()end end end end function h.CreateTab(I,J)assert(not I.unloaded,
@@ -2171,17 +2171,16 @@ fromRGB(170,122,140)}end)()end,[38]=function()local aa,ab,ac=a(38)local ad retur
 ]:string}}export type WindowConfiguration={autoSave:boolean?,autoLoad:boolean?,fileName:string?,customFolder:string?}
 export type WindowProps={name:string?,subtitle:string?,theme:Theme?,icon:(string|number)?,showName:string?,showIcon:(
 string|number)?,showIconOnly:boolean?,sidebarLayout:boolean?,profile:string?,BlurBackground:boolean?,CapsuleAnimation:boolean?,IconTabAnimation:boolean?,configuration:WindowConfiguration?,
-fallbackFont:(Font|Enum.Font)?,locale:string?,translations:Translations?,translator:Translator?}export type TabProps={
+fallbackFont:(Font|Enum.Font)?,locale:string?,translations:Translations?,translator:Translator?,ThemeAnimation:any?,TransitionTime:number?,ShinyEffect:boolean?}export type TabProps={
 name:string?,icon:(string|number)?}export type TagProps={text:string?,title:string?,icon:(string|number)?,color:Color3?,
-order:number?}export type SectionProps={name:string?,icon:(string|number)?}export type TextProps={name:string?,text:
-string?,icon:(string|number)?}export type DividerProps={text:string?,spacing:number?,line:boolean?}export type
+order:number?}export type SectionProps={name:string?,icon:(string|number)?}export type TextProps={name:string?,text:string?,icon:(string|number)?,instances:{any}?}export type DividerProps={text:string?,spacing:number?,line:boolean?}export type
 GroupProps={direction:string?}export type ButtonProps={name:string?,description:string?,icon:(string|number)?,callback:(
 ()->())?}export type ToggleProps={name:string?,description:string?,icon:(string|number)?,flag:string?,value:boolean?,
 forgetState:boolean?,callback:((value:boolean)->())?}export type SliderProps={name:string?,description:string?,icon:(
 string|number)?,flag:string?,range:{number}?,increment:number?,value:number?,suffix:string?,minimal:boolean?,forgetState
 :boolean?,callback:((value:number,dragging:boolean)->())?}export type DropdownProps={name:string?,description:string?,
-icon:(string|number)?,flag:string?,options:{string}?,value:(string|{string})?,multiSelect:boolean?,placeholder:string?,
-forgetState:boolean?,callback:((value:any)->())?}export type InputProps={name:string?,description:string?,icon:(string|
+icon:(string|number)?,flag:string?,options:{any}?,value:(string|{string})?,multiSelect:boolean?,placeholder:string?,
+forgetState:boolean?,callback:((value:any)->())?,optionColors:{[string]:Color3}?}export type InputProps={name:string?,description:string?,icon:(string|
 number)?,flag:string?,value:string?,placeholder:string?,numeric:boolean?,clearOnFocus:boolean?,forgetState:boolean?,
 callback:((value:string)->())?}export type KeybindProps={name:string?,description:string?,icon:(string|number)?,flag:
 string?,value:(EnumItem|string)?,forgetState:boolean?,isMenuToggle:boolean?,hold:boolean?,holdThreshold:number?,callback
