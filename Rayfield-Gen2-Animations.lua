@@ -1864,7 +1864,7 @@ then return J end if J.X.Scale~=0 or J.Y.Scale~=0 then return J end local K,L,M,
 Offset/2,I.size.Y.Offset/2,8 local O,P=math.clamp(J.X.Offset,L+N,math.max(L+N,K.X-L-N)),math.clamp(J.Y.Offset,M+N,math.
 max(M+N,K.Y-M-N))if O==J.X.Offset and P==J.Y.Offset then return J end return UDim2.fromOffset(O,P)end function h.
 _clampToScreen(I)I.main.Position=I:_clampedPosition(I.main.Position)end function h._applyWindowSize(I)if I.unloaded then
-return end local J=w(I.layout.mode)local K=J~=I.size I.size=J I:_applyRailWidth()if I.hidden or I.minimised or I.
+return end local J=w(I.layout.mode)if I.layout.mode=='sidebar'then local K=b.railWidthFor(I.layout,J.X.Offset)local L=K-(b.sidebar.railWidth::number)J=UDim2.fromOffset(math.max(J.X.Offset+L,560),J.Y.Offset)end local K=J~=I.size I.size=J I:_applyRailWidth()if I.hidden or I.minimised or I.
 animating or I._revealing then I._pendingResize=I._pendingResize or K return end if not K and not I._pendingResize then
 return end I._pendingResize=false I.main.Size=J I:_clampToScreen()I:_syncDragBar()end function h._applyRailWidth(I)if I.
 layout.mode~='sidebar'then return end e.applyWidth(I,b.railWidthFor(I.layout,I.size.X.Offset))end function h.
