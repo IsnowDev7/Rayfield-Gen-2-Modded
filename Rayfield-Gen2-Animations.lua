@@ -1984,7 +1984,7 @@ GetChildren())do if P:IsA'Frame'then f.tweenService:Create(P.ImageLabel,M,{Image
 settingsAction and I.selectedTab==I.rfSettings then f.tweenService:Create(I.settingsAction.iconLabel,M,{
 ImageTransparency=0.2}):Play()end for O,P in I.tags do P:_setShown(true,M)end for O,P in pairs(I.tabs)do if not P.
 neglectSelector and P.topbarItem then P.topbarItem.Visible=true P:_applyVisual(if I.selectedTab==P then'selected'else
-'unselected',M)end end I:_setTabSectionsVisible(true)I:_setTabSectionsShown(true,M)I:_revealElements(0.035,0.4)end)task.
+'unselected',M)P:_spinGradients()end end I:_setTabSectionsVisible(true)I:_setTabSectionsShown(true,M)I:_revealElements(0.035,0.4)end)task.
 delay(0.22,function()I.drag.drag.Position=UDim2.new(J.X.Scale,J.X.Offset,J.Y.Scale,J.Y.Offset+I.size.Y.Offset/2+15)I.
 drag.dragCosmetic.Size=UDim2.fromOffset(0,4)I.drag.dragCosmetic.BackgroundTransparency=1 I.drag.drag.Visible=true f.
 tweenService:Create(I.drag.dragCosmetic,K,{Size=UDim2.fromOffset(100,4),BackgroundTransparency=0.7}):Play()end)task.
