@@ -147,7 +147,6 @@ Actions:CreateKeybind({
 local Displays = Window:CreateTab({
     Name = "Displays",
     Icon = "rbxassetid://7734053495",
-    SwipeLeftTab = true,
 })
 
 Displays:CreateSection({
@@ -178,6 +177,34 @@ Displays:AddCreateDisplay({
             end,
         },
     },
+})
+
+-- This is the only tab using SwipeLeftTab.
+-- The Displays tab above remains a normal vertical-scrolling tab.
+local SwipeTest = Window:CreateTab({
+    Name = "Swipe Test",
+    Icon = "rbxassetid://7734053495",
+    SwipeLeftTab = true,
+})
+
+SwipeTest:CreateSection({
+    Name = "Horizontal Swipe Test",
+})
+
+SwipeTest:CreateText({
+    Name = "Swipe left",
+    Text = "This tab alone uses SwipeLeftTab. The Displays tab stays vertical.",
+})
+
+SwipeTest:CreateButton({
+    Name = "Swipe test button",
+    Callback = function()
+        Window:Notify({
+            Title = "Swipe test",
+            Content = "Swipe horizontally across this tab.",
+            Duration = 3,
+        })
+    end,
 })
 
 -- The window opens normally.
