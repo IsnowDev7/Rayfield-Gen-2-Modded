@@ -11,10 +11,10 @@ local Window = Rayfield:CreateWindow({
     Subtitle = "Rayfield Gen 2",
     Icon = "rbxassetid://7733960981",
 
-    -- New opt-in visual features.
+    -- Capsule visual feature.
     BlurBackground = true,
     CapsuleAnimation = true,
-    IconTabAnimation = true,
+    IconTabAnimation = false,
 
     -- Existing options can be used normally.
     Theme = "Default",
@@ -38,7 +38,7 @@ MainTab:CreateSection({
 
 MainTab:CreateText({
     Name = "What is enabled",
-    Text = "The window uses background blur, the capsule beat/glow animation, rotating tab icons, and the strengthened black corner glow.",
+    Text = "The window uses background blur, capsule beat/glow animation, a full-screen focus dim while the capsule is held, and the strengthened black corner glow.",
 })
 
 MainTab:CreateButton({
@@ -80,12 +80,12 @@ local SecondTab = Window:CreateTab({
 })
 
 SecondTab:CreateSection({
-    Name = "Icon Spin Test",
+    Name = "Capsule Focus Test",
 })
 
 SecondTab:CreateText({
     Name = "Try switching tabs",
-    Text = "This tab icon rotates one full revolution when the window opens and whenever this tab is selected.",
+    Text = "Hide the window, then hold or touch the capsule. A dark full-screen focus layer appears behind it and fades away on release.",
 })
 
 SecondTab:CreateButton({
@@ -117,4 +117,4 @@ Window:Show()
 -- Configuration examples:
 -- BlurBackground = false       -- disables Lighting blur
 -- CapsuleAnimation = false     -- disables capsule beat/glow
--- IconTabAnimation = false     -- disables tab icon spinning
+-- IconTabAnimation = false     -- tab icons remain static
