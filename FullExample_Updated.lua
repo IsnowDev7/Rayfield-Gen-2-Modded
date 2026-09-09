@@ -160,7 +160,44 @@ Actions:CreateKeybind({
     end,
 })
 
--- The window opens normally. CapsuleAnimation affects the restored capsule only.
+local Displays = Window:CreateTab({
+    Name = "Displays",
+    Icon = "rbxassetid://7734053495",
+    SwipeLeftTab = true,
+})
+
+Displays:CreateSection({
+    Name = "Display Components",
+})
+
+-- A display accepts an image and up to two child demonstration components.
+-- Supported child types: Button, Toggle, Dropdown, Paragraph, and Description.
+Displays:AddCreateDisplay({
+    Name = "Display Example",
+    Image = "rbxassetid://7733960981",
+    Description = "The section-style display keeps two interactive items underneath the image.",
+    Components = {
+        {
+            Type = "Toggle",
+            Name = "Display toggle",
+            Value = false,
+            Callback = function(value)
+                print("Display toggle:", value)
+            end,
+        },
+        {
+            Type = "Dropdown",
+            Name = "Display dropdown",
+            Options = {"First", "Second", "Third"},
+            Callback = function(value)
+                print("Display dropdown:", value)
+            end,
+        },
+    },
+})
+
+-- The window opens normally.
+-- CapsuleAnimation affects the restored capsule animation and glow.
 Window:Show()
 
 -- Optional cleanup:

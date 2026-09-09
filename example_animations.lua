@@ -87,7 +87,7 @@ SecondTab:CreateSection({
 
 SecondTab:CreateText({
     Name = "Try switching tabs",
-    Text = "Hide the window, then hold or touch the capsule. A dark full-screen focus layer appears behind it and fades away on release.",
+    Text = "Hide the window, then press or touch the capsule. The capsule stays visible without a dark full-screen overlay.",
 })
 
 SecondTab:CreateButton({
@@ -112,6 +112,43 @@ SettingsTab:CreateButton({
     Callback = function()
         Window:Hide()
     end,
+})
+
+local DisplayTab = Window:CreateTab({
+    SwipeLeftTab = true,
+    Name = "Displays",
+    Icon = "rbxassetid://7734053495",
+})
+
+DisplayTab:CreateSection({
+    Name = "Display Example",
+})
+
+DisplayTab:AddCreateDisplay({
+    Name = "Roblox CDN Display",
+    Image = "rbxassetid://7733960981",
+    Description = "A section-style display with an image and two child components.",
+    Components = {
+        {
+            Type = "Button",
+            Name = "Display button",
+            Callback = function()
+                Window:Notify({
+                    Title = "Display button",
+                    Content = "The display callback ran.",
+                    Duration = 3,
+                })
+            end,
+        },
+        {
+            Type = "Toggle",
+            Name = "Display toggle",
+            Value = false,
+            Callback = function(value)
+                print("Display toggle:", value)
+            end,
+        },
+    },
 })
 
 -- The window opens normally. Blur fades in during the opening animation.
