@@ -153,12 +153,12 @@ Displays:CreateSection({
     Name = "Display Components",
 })
 
--- A display accepts an image and up to two child demonstration components.
--- Supported child types: Button, Toggle, Dropdown, Paragraph, and Description.
+-- A display accepts an image and up to two official Rayfield components.
+-- They are stacked vertically inside the centered display card.
 Displays:AddCreateDisplay({
     Name = "Display Example",
     Image = "rbxassetid://7733960981",
-    Description = "The section-style display keeps two interactive items underneath the image.",
+    Description = "Official Rayfield controls are stacked vertically underneath the image.",
     Components = {
         {
             Type = "Toggle",
