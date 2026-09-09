@@ -16,6 +16,9 @@ local Window = Rayfield:CreateWindow({
     CapsuleAnimation = true,
     IconTabAnimation = false,
 
+    -- Optional tab-content mode: top-level sections and controls are laid out left-to-right.
+    SwipeLeftTab = true,
+
     -- Existing options can be used normally.
     Theme = "Default",
     SidebarLayout = false,
@@ -38,7 +41,7 @@ MainTab:CreateSection({
 
 MainTab:CreateText({
     Name = "What is enabled",
-    Text = "The window uses background blur, capsule beat/glow animation, a full-screen focus dim while the capsule is held, and the strengthened black corner glow.",
+    Text = "The window uses background blur, capsule beat/glow animation, and horizontal left-scrolling tab content. Swipe left to reveal each section, button, toggle, and slider without shrinking the controls.",
 })
 
 MainTab:CreateButton({
@@ -118,3 +121,7 @@ Window:Show()
 -- BlurBackground = false       -- disables Lighting blur
 -- CapsuleAnimation = false     -- disables capsule beat/glow
 -- IconTabAnimation = false     -- tab icons remain static
+
+
+-- SwipeLeftTab keeps each top-level UI item at the normal tab width and places
+-- the items side-by-side. Turn it off to restore the normal vertical tab.
