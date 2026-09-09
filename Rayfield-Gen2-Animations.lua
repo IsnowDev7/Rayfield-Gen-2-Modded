@@ -1792,7 +1792,7 @@ function()L:ToggleHide()end})L.minimiseAction=ac(ab.Parent.action).new(L,{name='
 settings,order=3,linkedTab=L.rfSettings,callback=function()L.rfSettings:Select()end})d.build(L)L:_applyRailWidth()L.
 unloaded=false L.minimised=false L.hidden=true L.animating=false L._revealing=false L.hasShownOnce=false L.
 _collapsedShown=false L:LoadSettings()if L.layout.mode=='sidebar'then e.reflowProfile(L)e.setSubtitle(L,L.profileText)
-end al.setContainer(L.screenGui)al.setEnabled(L.settings.haptics)c.buildCollapsedFace(L)L:_bindKeybind()L:
+end al.setContainer(L.screenGui)al.setEnabled(L.settings.haptics)L.capsuleFocus=L:Create('Frame',{Name='CapsuleFocusDim',Active=false,Size=UDim2.fromScale(1,1),Position=UDim2.fromScale(0,0),BorderSizePixel=0,BackgroundColor3=Color3.fromRGB(0,0,0),BackgroundTransparency=1,ZIndex=900,Visible=false,Parent=L.screenGui})c.buildCollapsedFace(L)L:Connect(L.collapsedInteract.InputBegan,function(M,N)if N then return end local O=M.UserInputType.Name if O=='MouseButton1'or O=='Touch'then L.capsuleFocus.Visible=true if L._capsuleFocusTween then L._capsuleFocusTween:Cancel()end L._capsuleFocusTween=f.tweenService:Create(L.capsuleFocus,TweenInfo.new(0.22,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency=0.28})L._capsuleFocusTween:Play()end end)L:Connect(L.collapsedInteract.InputEnded,function(M)if M.UserInputType.Name=='MouseButton1'or M.UserInputType.Name=='Touch'then if L._capsuleFocusTween then L._capsuleFocusTween:Cancel()end L._capsuleFocusTween=f.tweenService:Create(L.capsuleFocus,TweenInfo.new(0.3,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency=1})L._capsuleFocusTween.Completed:Connect(function()if L.capsuleFocus then L.capsuleFocus.Visible=false end end)L._capsuleFocusTween:Play()end end)L:_bindKeybind()L:
 _bindMouseOverride()L:_bindTopbarDrag()L:_watchViewport()L:_buildSettingsUI()L:_syncLiveAnimation()return L end function
 h._syncLiveAnimation(I)if not I.theme.LiveAnimation then I._liveAnimating=false return end if I._liveAnimating then
 return end I._liveAnimating=true I._liveGeneration=(I._liveGeneration or 0)+1 local J=I._liveGeneration task.spawn(
@@ -1967,7 +1967,7 @@ task.wait(J)end else S:_setShown(true,false)end end end function h.Show(I)if I.a
 I.animating=true I._revealing=true if I.configuration.autoLoad and not I._autoLoaded then I._autoLoaded=true local J,K=
 pcall(I.Load,I)if not J then ak.warn('Rayfield: Failed to load configuration - '..tostring(K))end end I.hidden=false I.
 minimised=false if I._themeRefreshPending then I._themeRefreshPending=false I:_refreshElementThemes()end I.
-collapsedInteract.Visible=false if I._freeMouse then I._freeMouse()end if I.hasShownOnce then I:_quickRestore()else I.
+collapsedInteract.Visible=false if I.capsuleFocus then I.capsuleFocus.Visible=false I.capsuleFocus.BackgroundTransparency=1 end if I._freeMouse then I._freeMouse()end if I.hasShownOnce then I:_quickRestore()else I.
 hasShownOnce=true I:_firstShow()end end function h._quickRestore(I)I:_setWindowBlur(true) local J=I:_clampedPosition(I._restorePosition or
 UDim2.new(0.5,0,0.5,0))I._restorePosition=J local K,L,M=TweenInfo.new(0.35,Enum.EasingStyle.Exponential,Enum.
 EasingDirection.InOut),TweenInfo.new(0.35,Enum.EasingStyle.Exponential,Enum.EasingDirection.InOut),TweenInfo.new(0.28,
