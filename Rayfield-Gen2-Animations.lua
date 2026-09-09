@@ -1368,11 +1368,11 @@ _recordingKeybind=nil end if d._outsideClickConn then am:Disconnect(d._outsideCl
 end local am,b=TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),TweenInfo.new(0.25,Enum.EasingStyle.
 Quint,Enum.EasingDirection.Out)function ae.new(c,d)d=if typeof(d)=='table'then d else{}local e=setmetatable({window=
 assert(c,'Missing argument #1 (Window expected)'),name=d.name or d.Name,icon=d.icon or d.Icon,neglectSelector=d.
-neglectSelector or d.NeglectSelector or false,customOrder=d.customOrder or d.CustomOrder or 0,forgetState=d.forgetState
+neglectSelector or d.NeglectSelector or false,swipeLeftTab=d.SwipeLeftTab==true or d.swipeLeftTab==true,customOrder=d.customOrder or d.CustomOrder or 0,forgetState=d.forgetState
 or d.ForgetState or false,elements={},connections={}},ae)assert(e.name or e.icon,'A tab needs a name or an icon.')if not
 e.neglectSelector then ak.build(e,e.window.layout)end e.tabPage=e.window:Create('ScrollingFrame',{Name=e.name,Size=UDim2
 .new(1,-20,1,0),Position=UDim2.new(0.5,0,0,68),AnchorPoint=Vector2.new(0.5,0.5),BorderSizePixel=0,BackgroundTransparency
-=1,AutomaticCanvasSize=if e.window.swipeLeftTab then Enum.AutomaticSize.X else Enum.AutomaticSize.Y,CanvasSize=UDim2.new(0,0,0,0),ScrollBarThickness=0,ScrollingDirection=if e.window.swipeLeftTab then Enum.ScrollingDirection.X else Enum.ScrollingDirection.Y,LayoutOrder=e.customOrder or 0,Parent=e.window.elements})e.tabPageLayout=e.window:Create('UIListLayout',{Padding=UDim.new(0,7),FillDirection=if e.window.swipeLeftTab then Enum.FillDirection.Horizontal else Enum.FillDirection.Vertical,VerticalAlignment=if e.window.swipeLeftTab then Enum.VerticalAlignment.Center else Enum.VerticalAlignment.Top,HorizontalAlignment=if e.window.swipeLeftTab then Enum.HorizontalAlignment.Left else Enum.HorizontalAlignment.Center,SortOrder=Enum.SortOrder.LayoutOrder,Parent=e.tabPage})e.window
+=1,AutomaticCanvasSize=if e.swipeLeftTab then Enum.AutomaticSize.X else Enum.AutomaticSize.Y,CanvasSize=UDim2.new(0,0,0,0),ScrollBarThickness=0,ScrollingDirection=if e.swipeLeftTab then Enum.ScrollingDirection.X else Enum.ScrollingDirection.Y,LayoutOrder=e.customOrder or 0,Parent=e.window.elements})e.tabPageLayout=e.window:Create('UIListLayout',{Padding=UDim.new(0,7),FillDirection=if e.swipeLeftTab then Enum.FillDirection.Horizontal else Enum.FillDirection.Vertical,VerticalAlignment=if e.swipeLeftTab then Enum.VerticalAlignment.Center else Enum.VerticalAlignment.Top,HorizontalAlignment=if e.swipeLeftTab then Enum.HorizontalAlignment.Left else Enum.HorizontalAlignment.Center,SortOrder=Enum.SortOrder.LayoutOrder,Parent=e.tabPage})e.window
 :Create('UIPadding',{PaddingTop=UDim.new(0,10),PaddingBottom=UDim.new(0,33),Parent=e.tabPage})if not e.neglectSelector
 then table.insert(e.connections,e.window:Connect(e.topbarItemInteract.MouseButton1Click,function()ai.click()e:Select()
 end))table.insert(e.connections,e.window:Connect(e.topbarItemInteract.MouseEnter,function()if not e.window:_interactive(
@@ -1715,7 +1715,7 @@ aj.setActive(I.locale or I.Locale or aj.detect())local J=I.fallbackFont or I.Fal
 end local K=z(I.sidebarLayout or I.SidebarLayout)local L=setmetatable({name=I.name or I.Name or'Rayfield Window',
 subheading=I.subtitle or I.Subtitle,layout=K,size=w(K.mode),instances={},connections={},icon=I.icon or I.Icon,showName=I
 .showName or I.ShowName or'Rayfield',showIcon=I.showIcon or I.ShowIcon or ai.icons.rayfield,showIconOnly=I.showIconOnly
-or I.ShowIconOnly or false,profileText=I.profile or I.Profile,blurBackground=I.BlurBackground==true, capsuleAnimation=I.CapsuleAnimation==true,swipeLeftTab=I.SwipeLeftTab==true,iconTabAnimation=false,themeProperties={},localeProperties={},tabs={},tabSections
+or I.ShowIconOnly or false,profileText=I.profile or I.Profile,blurBackground=I.BlurBackground==true, capsuleAnimation=I.CapsuleAnimation==true,iconTabAnimation=false,themeProperties={},localeProperties={},tabs={},tabSections
 ={},tags={},selectedTab=nil,theme=H(I.theme or I.Theme),controls={},configuration=(function()local L=I.configuration or
 I.Configuration if not L then return{}end return{autoSave=L.autoSave or L.AutoSave,autoLoad=L.autoLoad or L.AutoLoad,
 fileName=L.fileName or L.FileName,customFolder=L.customFolder or L.CustomFolder}end)()},h)L.Flags=setmetatable({},{

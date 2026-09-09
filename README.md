@@ -15,4 +15,4 @@ The current version includes the Damascus, Blahite, and Yelue themes; guarded im
 
 ## SwipeLeftTab
 
-Set `SwipeLeftTab = true` in `CreateWindow` to lay out each tab's top-level sections and controls horizontally. The tab content can then be swiped or scrolled left and right, while each section, button, toggle, paragraph, and other control keeps its normal width. The default remains vertical scrolling when the option is omitted or set to `false`.
+Set `SwipeLeftTab = true` inside an individual `Window:CreateTab({...})` definition to lay out that tab's top-level sections and controls horizontally. The tab content can then be swiped or scrolled left and right, while each section, button, toggle, paragraph, and other control keeps its normal width. The default remains vertical scrolling when the option is omitted or set to `false`.

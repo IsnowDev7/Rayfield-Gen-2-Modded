@@ -16,9 +16,6 @@ local Window = Rayfield:CreateWindow({
     CapsuleAnimation = true,
     IconTabAnimation = false,
 
-    -- Optional tab-content mode: top-level sections and controls are laid out left-to-right.
-    SwipeLeftTab = true,
-
     -- Existing options can be used normally.
     Theme = "Default",
     SidebarLayout = false,
@@ -31,6 +28,7 @@ local Window = Rayfield:CreateWindow({
 })
 
 local MainTab = Window:CreateTab({
+    SwipeLeftTab = true,
     Name = "Main",
     Icon = "rbxassetid://7734053495",
 })
@@ -78,6 +76,7 @@ MainTab:CreateSlider({
 })
 
 local SecondTab = Window:CreateTab({
+    SwipeLeftTab = true,
     Name = "Second Tab",
     Icon = "rbxassetid://7734053495",
 })
@@ -99,6 +98,7 @@ SecondTab:CreateButton({
 })
 
 local SettingsTab = Window:CreateTab({
+    SwipeLeftTab = true,
     Name = "Settings",
     Icon = "rbxassetid://7734053495",
 })
@@ -123,5 +123,5 @@ Window:Show()
 -- IconTabAnimation = false     -- tab icons remain static
 
 
--- SwipeLeftTab keeps each top-level UI item at the normal tab width and places
--- the items side-by-side. Turn it off to restore the normal vertical tab.
+-- SwipeLeftTab is configured inside each CreateTab call above.
+-- Remove it from a tab to restore that tab's normal vertical scrolling.

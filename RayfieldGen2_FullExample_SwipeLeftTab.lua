@@ -30,7 +30,8 @@ local Window = Rayfield:CreateWindow({
     subtitle = "Every documented component",
     icon = 93364949241311,
     sidebarLayout = true,
-    SwipeLeftTab = true, -- test horizontal left-scrolling tab content
+    BlurBackground = true,
+    CapsuleAnimation = true,
     profile = "Complete API demonstration",
     showName = "Rayfield",
     showIcon = 93364949241311,
@@ -69,16 +70,19 @@ local Window = Rayfield:CreateWindow({
 Window:CreateSection({ name = "Showcase" })
 
 local Home = Window:CreateTab({
+    SwipeLeftTab = true,
     name = "Home",
     icon = 93364949241311,
 })
 
 local Controls = Window:CreateTab({
+    SwipeLeftTab = true,
     name = "Controls",
     icon = 6031075931,
 })
 
 local Display = Window:CreateTab({
+    SwipeLeftTab = true,
     name = "Display",
     icon = 6031280882,
 })
@@ -86,11 +90,13 @@ local Display = Window:CreateTab({
 Window:CreateSection({ name = "Utilities" })
 
 local Messages = Window:CreateTab({
+    SwipeLeftTab = true,
     name = "Messages",
     icon = 6031094678,
 })
 
 local Settings = Window:CreateTab({
+    SwipeLeftTab = true,
     name = "Settings",
     icon = 6031280882,
 })
