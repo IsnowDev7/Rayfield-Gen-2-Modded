@@ -1,6 +1,5 @@
--- Rayfield Gen 2 animation features example
+-- Rayfield Gen 2 animation and section-layout example
 -- The modified library is available in Rayfield-Gen2-Animations.lua.
--- For a live release, replace the URL below with your raw GitHub URL after publishing.
 
 local Rayfield = loadstring(game:HttpGet(
     "https://raw.githubusercontent.com/IsnowDev7/Rayfield-Gen-2-Modded/main/Rayfield-Gen2-Animations.lua"
@@ -8,17 +7,16 @@ local Rayfield = loadstring(game:HttpGet(
 
 local Window = Rayfield:CreateWindow({
     Name = "Animation Showcase",
-    Subtitle = "Rayfield Gen 2",
+    Subtitle = "Sections + capsule interaction",
     Icon = "rbxassetid://7733960981",
 
-    -- Capsule visual feature.
+    -- SidebarLayout enables Window:CreateSection below.
+    SidebarLayout = true,
     BlurBackground = true,
     CapsuleAnimation = true,
     IconTabAnimation = false,
 
-    -- Existing options can be used normally.
     Theme = "Default",
-    SidebarLayout = false,
     configuration = {
         autoSave = true,
         autoLoad = true,
@@ -27,19 +25,25 @@ local Window = Rayfield:CreateWindow({
     },
 })
 
+-- Window sections are rendered in the sidebar only when SidebarLayout = true.
+Window:CreateSection({
+    Name = "Examples",
+    Icon = "rbxassetid://7734053495",
+})
+
 local MainTab = Window:CreateTab({
-    SwipeLeftTab = true,
     Name = "Main",
     Icon = "rbxassetid://7734053495",
 })
 
+-- Tab sections are rendered inside the tab content area in every layout.
 MainTab:CreateSection({
     Name = "Animation Features",
 })
 
 MainTab:CreateText({
     Name = "What is enabled",
-    Text = "The window uses background blur, capsule beat/glow animation, and horizontal left-scrolling tab content. Swipe left to reveal each section, button, toggle, and slider without shrinking the controls.",
+    Text = "This window demonstrates sidebar sections, regular tab sections, background blur, and the capsule animation.",
 })
 
 MainTab:CreateButton({
@@ -48,7 +52,7 @@ MainTab:CreateButton({
     Callback = function()
         Window:Notify({
             Title = "Animations enabled",
-            Content = "Touch or hold the capsule to see the beat and glow effect.",
+            Content = "Hide the window, then press or hold the capsule to see it widen slightly with the beat and glow effect.",
             Duration = 4,
         })
     end,
@@ -76,7 +80,6 @@ MainTab:CreateSlider({
 })
 
 local SecondTab = Window:CreateTab({
-    SwipeLeftTab = true,
     Name = "Second Tab",
     Icon = "rbxassetid://7734053495",
 })
@@ -87,7 +90,7 @@ SecondTab:CreateSection({
 
 SecondTab:CreateText({
     Name = "Try switching tabs",
-    Text = "Hide the window, then press or touch the capsule. The capsule stays visible without a dark full-screen overlay.",
+    Text = "Hide the window, then press or touch the capsule. It widens slightly while held and returns to its original size when released.",
 })
 
 SecondTab:CreateButton({
@@ -98,7 +101,6 @@ SecondTab:CreateButton({
 })
 
 local SettingsTab = Window:CreateTab({
-    SwipeLeftTab = true,
     Name = "Settings",
     Icon = "rbxassetid://7734053495",
 })
@@ -114,8 +116,12 @@ SettingsTab:CreateButton({
     end,
 })
 
+-- Create more sidebar sections whenever you want to group tab selectors.
+Window:CreateSection({
+    Name = "More",
+})
+
 local DisplayTab = Window:CreateTab({
-    SwipeLeftTab = true,
     Name = "Displays",
     Icon = "rbxassetid://7734053495",
 })
@@ -151,14 +157,9 @@ DisplayTab:AddCreateDisplay({
     },
 })
 
--- The window opens normally. Blur fades in during the opening animation.
 Window:Show()
 
--- Configuration examples:
--- BlurBackground = false       -- disables Lighting blur
--- CapsuleAnimation = false     -- disables capsule beat/glow
--- IconTabAnimation = false     -- tab icons remain static
-
-
--- SwipeLeftTab is configured inside each CreateTab call above.
--- Remove it from a tab to restore that tab's normal vertical scrolling.
+-- Configuration notes:
+-- SidebarLayout = false  -- Window:CreateSection becomes inert; tab sections still work.
+-- CapsuleAnimation = false -- disables capsule beat, glow, and press-widen animation.
+-- IconTabAnimation = false -- tab icons remain static.
