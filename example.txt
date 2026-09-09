@@ -103,3 +103,47 @@ Tab:CreateText({
 ```
 
 `ThemeAnimation` accepts either one theme name or an ordered table of theme names. `TransitionTime` accepts seconds as a number or a string such as `"5 seconds"`. Dropdown options remain backward-compatible with plain strings; table options use `Name`/`Text` plus an optional `Color`/`LabelColor`.
+
+
+## Dropdown colors and custom sidebar width
+
+```lua
+local Window = Rayfield:CreateWindow({
+    Name = "Custom Sidebar Demo",
+    SidebarLayout = true,
+
+    -- Accepts a number or a string such as "240 px".
+    SideBarWidth = "240 px",
+})
+
+local Tab = Window:CreateTab({
+    Name = "Rewards",
+})
+
+Tab:CreateDropdown({
+    Name = "Rarity",
+    Options = {
+        {Label = "Common", LabelColor = Color3.fromRGB(190, 190, 190)},
+        {Label = "Rare", LabelColor = Color3.fromRGB(80, 160, 255)},
+        {Label = "Epic", LabelColor = Color3.fromRGB(190, 90, 255)},
+        {Label = "Legendary", LabelColor = Color3.fromRGB(255, 190, 60)},
+    },
+    Callback = function(value)
+        print(value)
+    end,
+})
+
+-- A separate map is also supported.
+Tab:CreateDropdown({
+    Name = "Another rarity list",
+    Options = {"Common", "Rare", "Epic", "Legendary"},
+    OptionColors = {
+        Common = Color3.fromRGB(190, 190, 190),
+        Rare = Color3.fromRGB(80, 160, 255),
+        Epic = Color3.fromRGB(190, 90, 255),
+        Legendary = Color3.fromRGB(255, 190, 60),
+    },
+})
+```
+
+`SideBarWidth` controls the sidebar rail and all of its tab rows. The main content area automatically receives the remaining width, so sections, buttons, toggles, dropdowns, paragraphs, and displays resize with it.

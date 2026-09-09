@@ -440,7 +440,7 @@ d(g.locale),d(g.HapticEngine),d(g.windowSizing),d(g.lockable)local p,q,r,s,t,u,v
 .check,k.icons.dot,k.icons.search,UDim.new(0,12),UDim.new(0,7),30,38,38,5,2,41,6,7,6 local E,F,G,H,I,J,K=C+D,4,22,
 TweenInfo.new(0.2,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),TweenInfo.new(0.25,Enum.EasingStyle.Quint,Enum.
 EasingDirection.Out),0.4,TweenInfo.new(0.35,Enum.EasingStyle.Exponential,Enum.EasingDirection.Out)local function L(M)
-local N,O={},{}for P,Q in M do local R=if typeof(Q)=='table'then Q.name or Q.Name or Q.text or Q.Text else Q if typeof(R)=='string'and not N[R]then N[R]=true table.insert(O,R)end end return O end
+local N,O={},{}for P,Q in M do local R=if typeof(Q)=='table'then Q.name or Q.Name or Q.text or Q.Text or Q.label or Q.Label or Q.value or Q.Value or Q[1] else Q if typeof(R)=='string'and not N[R]then N[R]=true table.insert(O,R)end end return O end
 local function M(N,O)if N==nil then return{}end if typeof(N)=='string'then return{N}end if typeof(N)=='table'then local
 P=L(N)if not O and#P>1 then return{P[1]}end return P end return{}end local function N(O,P)local Q={}for R,S in O do if
 table.find(P,S)then table.insert(Q,S)end end return Q end local function O(P,Q)if#P~=#Q then return false end for R,S in
@@ -451,7 +451,7 @@ setmetatable({tab=assert(P,'Missing argument #1 (Tab expected)'),window=P.window
 ,flag=Q.flag or Q.Flag or(not(Q.forgetState or Q.ForgetState or P.forgetState)and i.deriveFlagFromName(Q.name or Q.Name
 or'Dropdown')or nil),callback=Q.callback or Q.Callback or function()end,options=L(R),multiSelect=S,placeholderText=l.
 resolve(Q.placeholder or Q.Placeholder or'None'),value=M(Q.value or Q.Value or Q.currentOption or Q.CurrentOption,S),
-_isOpen=false,_optionFrames={},optionColors=Q.optionColors or Q.OptionColors or Q.colors or Q.Colors or{}},f)for _,option in R do if typeof(option)=='table'then local label=option.name or option.Name or option.text or option.Text local color=option.color or option.Color or option.labelColor or option.LabelColor if typeof(label)=='string'and(color~=nil)then T.optionColors[label]=color end end end T._desiredValue=T.value T.value=N(T.value,T.options)T.window:_registerControl(T)T.main
+_isOpen=false,_optionFrames={},optionColors=Q.optionColors or Q.OptionColors or Q.colors or Q.Colors or{}},f)for _,option in R do if typeof(option)=='table'then local label=option.name or option.Name or option.text or option.Text or option.label or option.Label or option.value or option.Value or option[1] local color=option.color or option.Color or option.labelColor or option.LabelColor or option[2] if typeof(label)=='string'and(color~=nil)then T.optionColors[label]=color end end end T._desiredValue=T.value T.value=N(T.value,T.options)T.window:_registerControl(T)T.main
 =T.window:Create('Frame',{Size=UDim2.new(1,-20,0,41),BorderSizePixel=0,Name=T.name,BackgroundTransparency=1,Parent=T.tab
 .tabPage})T.top=T.window:Create('Frame',{Size=UDim2.new(1,0,0,41),Position=UDim2.fromScale(0,0),BorderSizePixel=0,
 BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,ZIndex=1,Parent=T.main},{BackgroundTransparency=
@@ -499,7 +499,7 @@ Transparency=ab}):Play()else W.frame.BackgroundTransparency=Z W.title.TextTransp
 aa W.stroke.Transparency=ab end end local function aa()if T.multiSelect then local ab=#T.value if ab==0 then T.
 selectedLabel.Text=T.placeholderText elseif ab==1 then T.selectedLabel.Text=T.value[1]else T.selectedLabel.Text=l.
 resolve'Various'end else T.selectedLabel.Text=T.value[1]or T.placeholderText end local selected=T.value[1]and T.optionColors[T.value[1]] T.selectedLabel.TextColor3=selected or T.window.theme.ContentColor end T._renderOptionState=V T.
-_updateSelectedLabel=aa local function ab(ac)local W=T.window:Create('Frame',{Size=UDim2.new(1,-12,0,x),BorderSizePixel=
+_updateSelectedLabel=aa T._applyOptionColor=function()local selected=T.value[1]and T.optionColors[T.value[1]]T.selectedLabel.TextColor3=selected or T.window.theme.ContentColor end local function ab(ac)local W=T.window:Create('Frame',{Size=UDim2.new(1,-12,0,x),BorderSizePixel=
 0,LayoutOrder=#T._optionFrames+1,BackgroundTransparency=1,Parent=T.list},{BackgroundColor3='DropdownHighlight'})local X,
 Y,Z,_=T.window:Create('UICorner',{CornerRadius=u,Parent=W}),T.window:Create('UIStroke',{Color=Color3.fromRGB(255,255,255
 ),Transparency=1,Parent=W}),T.window:Create('TextButton',{BackgroundTransparency=1,Size=UDim2.fromScale(1,1),Text='',
@@ -524,7 +524,7 @@ multiSelect then if ag then T:_close()return end table.clear(T.value)table.inser
 ah=table.find(T.value,af.name)if ah then table.remove(T.value,ah)end else table.insert(T.value,af.name)end end T.
 _desiredValue=table.clone(T.value)for ah,ai in T._optionFrames do V(ai,true)end aa()T.window:_runGuarded(T,T.callback,T:
 _callbackValue())T.window:_persist(T)if not T.multiSelect then task.wait(0.1)T:_close()end end))return af end T.
-_buildOption=ab for ac,ad in T.options do local ae=ab(ad)table.insert(T._optionFrames,ae)end aa()T:_updateCorners()T.
+_buildOption=ab for ac,ad in T.options do local ae=ab(ad)table.insert(T._optionFrames,ae)end aa()T._applyOptionColor()T:_updateCorners()T.
 window:ConnectFor(T,T.interact.MouseButton1Click,function()m.click()if T._isOpen then T:_close()else T:_open()end end)T.
 window:ConnectFor(T,T.main.MouseEnter,function()if T._isOpen or not T.window:_interactive()then return end h.
 tweenService:Create(T.title,I,{TextColor3=T.window.theme.ElementTextHoverColor}):Play()h.tweenService:Create(T.
@@ -1708,7 +1708,7 @@ FontWeight.Medium)end if not(L and(L.TitleFont or L.titleFont))then J.TitleFont=
 return J end function h.new(I)I=if typeof(I)=='table'then I else{}if I.translations or I.Translations then aj.register(I
 .translations or I.Translations)end if I.translator or I.Translator then aj.translator=I.translator or I.Translator end
 aj.setActive(I.locale or I.Locale or aj.detect())local J=I.fallbackFont or I.FallbackFont if J then f.setFallbackFont(J)
-end local K=z(I.sidebarLayout or I.SidebarLayout)local L=setmetatable({name=I.name or I.Name or'Rayfield Window',
+end local K=z(I.sidebarLayout or I.SidebarLayout)if K and K.mode=='sidebar' then local requested=I.SideBarWidth or I.SidebarWidth or I.sidebarWidth or I.sidebar_width local width=tonumber(requested)or(type(requested)=='string'and tonumber(string.match(requested,'%d+%.?%d*')))if width then K=table.clone(K)K.railWidth=math.clamp(width,40,480)K.railCollapsedWidth=math.clamp(math.min(K.railCollapsedWidth,K.railWidth),40,K.railWidth)K.railCollapseBelow=math.max(K.railCollapseBelow,K.railWidth+370)end end local L=setmetatable({name=I.name or I.Name or'Rayfield Window',
 subheading=I.subtitle or I.Subtitle,layout=K,size=w(K.mode),instances={},connections={},icon=I.icon or I.Icon,showName=I
 .showName or I.ShowName or'Rayfield',showIcon=I.showIcon or I.ShowIcon or ai.icons.rayfield,showIconOnly=I.showIconOnly
 or I.ShowIconOnly or false,profileText=I.profile or I.Profile,blurBackground=I.BlurBackground==true, capsuleAnimation=I.CapsuleAnimation==true,shinyEffect=I.ShinyEffect==true,themeAnimation=I.ThemeAnimation or I.themeAnimation,transitionTime=tonumber(I.TransitionTime)or tonumber(I.transitionTime)or(type(I.TransitionTime)=='string'and tonumber(string.match(I.TransitionTime,'%d+%.?%d*')))or(type(I.transitionTime)=='string'and tonumber(string.match(I.transitionTime,'%d+%.?%d*')))or 0.5,iconTabAnimation=false,themeProperties={},localeProperties={},tabs={},tabSections
@@ -2170,7 +2170,7 @@ fromRGB(170,122,140)}end)()end,[38]=function()local aa,ab,ac=a(38)local ad retur
 ]:string}}export type WindowConfiguration={autoSave:boolean?,autoLoad:boolean?,fileName:string?,customFolder:string?}
 export type WindowProps={name:string?,subtitle:string?,theme:Theme?,icon:(string|number)?,showName:string?,showIcon:(
 string|number)?,showIconOnly:boolean?,sidebarLayout:boolean?,profile:string?,BlurBackground:boolean?,CapsuleAnimation:boolean?,IconTabAnimation:boolean?,configuration:WindowConfiguration?,
-fallbackFont:(Font|Enum.Font)?,locale:string?,translations:Translations?,translator:Translator?,ThemeAnimation:any?,TransitionTime:number?,ShinyEffect:boolean?}export type TabProps={
+fallbackFont:(Font|Enum.Font)?,SideBarWidth:(number|string)?,locale:string?,translations:Translations?,translator:Translator?,ThemeAnimation:any?,TransitionTime:number?,ShinyEffect:boolean?}export type TabProps={
 name:string?,icon:(string|number)?}export type TagProps={text:string?,title:string?,icon:(string|number)?,color:Color3?,
 order:number?}export type SectionProps={name:string?,icon:(string|number)?}export type TextProps={name:string?,text:string?,icon:(string|number)?,instances:{any}?}export type DividerProps={text:string?,spacing:number?,line:boolean?}export type
 GroupProps={direction:string?}export type ButtonProps={name:string?,description:string?,icon:(string|number)?,callback:(
