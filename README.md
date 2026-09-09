@@ -11,4 +11,4 @@ This repository contains the corrected Rayfield Gen 2 modded source.
 
 ## Included fixes
 
-The current version includes the Damacus, Blahite, and Yelue themes; guarded image and avatar resolution; `CreateHoldButton`; automatic blur lifecycle handling; tab icon rotation; a window-attached profile card; and defensive console rendering.
+The current version includes the Damascus, Blahite, and Yelue themes; guarded image and avatar resolution; `CreateHoldButton`; automatic blur lifecycle handling; tab icon rotation; a window-attached profile card; and defensive console rendering.
