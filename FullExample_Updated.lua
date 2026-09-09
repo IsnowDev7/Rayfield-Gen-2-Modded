@@ -26,7 +26,6 @@ local Window = Rayfield:CreateWindow({
 local Home = Window:CreateTab({
     Name = "Home",
     Icon = "rbxassetid://7734053495",
-    SwipeLeftTab = true,
 })
 
 Home:CreateSection({Name = "Welcome"})
@@ -72,7 +71,6 @@ Home:CreateSlider({
 local Controls = Window:CreateTab({
     Name = "Controls",
     Icon = "rbxassetid://7734053495",
-    SwipeLeftTab = true,
 })
 
 Controls:CreateSection({Name = "Window Controls"})
@@ -123,7 +121,6 @@ Controls:CreateDropdown({
 local Actions = Window:CreateTab({
     Name = "Actions",
     Icon = "rbxassetid://7734053495",
-    SwipeLeftTab = true,
 })
 
 Actions:CreateSection({Name = "Action Examples"})
