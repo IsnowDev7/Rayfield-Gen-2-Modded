@@ -112,16 +112,15 @@ RichText=true,TextSize=16,TextWrapped=true,TextXAlignment=Enum.TextXAlignment.Le
 restoreContent,TextTransparency=1,Parent=p},{TextColor3='TitlingColor'})n.collapsedSubtitle=n:Create('TextLabel',{Name=
 'Subtitle',Text=j.t'Tap to show',Size=UDim2.new(1,0,0,14),BackgroundTransparency=1,FontFace=g.brandFont(Enum.FontWeight.
 Medium),TextSize=14,TextXAlignment=Enum.TextXAlignment.Left,LayoutOrder=2,ZIndex=i.zIndex.restoreContent,
-TextTransparency=1,Parent=p},{TextColor3='TitlingColor'})n.collapsedInteract=n:Create('TextButton',{Name=
-'CollapsedInteract',BackgroundTransparency=1,Size=UDim2.fromScale(1,1),Text='',TextTransparency=1,Visible=false,ZIndex=i
-.zIndex.restoreInteract,Parent=n.main})l.bindCollapsedDrag(n)end function l.bindCollapsedDrag(n)local o,p,q,r,s=g.
+TextTransparency=1,Parent=p},{TextColor3='TitlingColor'})n.collapsedInteract=n:Create('TextButton',{Name='CollapsedInteract',BackgroundTransparency=1,Size=UDim2.fromScale(1,1),Text='',TextTransparency=1,Visible=false,ZIndex=i
+.zIndex.restoreInteract,Parent=n.main})n.collapsedScale=n:Create('UIScale',{Scale=1,Parent=n.main})n.collapsedGlow=n:CreateGlow(n.main,Color3.fromRGB(255,255,255),22,1)l.bindCollapsedDrag(n)end function l.bindCollapsedDrag(n)local o,p,q,r,s=g.
 userInputService,false,false,Vector2.zero,Vector2.zero local function t()if n.screenGui and n.screenGui.IgnoreGuiInset
 then return g.guiService:GetGuiInset()end return Vector2.zero end n:Connect(n.collapsedInteract.InputBegan,function(u,v)
 if v or not n.hidden or n.animating then return end local w=u.UserInputType.Name if w~='MouseButton1'and w~='Touch'then
-return end p,q=true,false s=o:GetMouseLocation()r=n.main.AbsolutePosition+n.main.AbsoluteSize*n.main.AnchorPoint-s end)n
+return end p,q=true,false s=o:GetMouseLocation()r=n.main.AbsolutePosition+n.main.AbsoluteSize*n.main.AnchorPoint-s if n.capsuleAnimation then g.tweenService:Create(n.collapsedScale,TweenInfo.new(0.2,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Scale=1.08}):Play()g.tweenService:Create(n.collapsedGlow,TweenInfo.new(0.18,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Transparency=0.25}):Play()end end)n
 :Connect(o.InputEnded,function(u)local v=u.UserInputType.Name if v~='MouseButton1'and v~='Touch'then return end if not p
-then return end p=false if q then n._collapsedPosition=n.main.Position return end k.click()n:ToggleHide()end)n:Connect(o
-.WindowFocusReleased,function()p=false end)n:Connect(g.runService.RenderStepped,function()if not p then return end if
+then return end p=false if n.capsuleAnimation then g.tweenService:Create(n.collapsedScale,TweenInfo.new(0.28,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Scale=1}):Play()g.tweenService:Create(n.collapsedGlow,TweenInfo.new(0.25,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Transparency=1}):Play()end if q then n._collapsedPosition=n.main.Position return end k.click()n:ToggleHide()end)n:Connect(o
+.WindowFocusReleased,function()p=false if n.capsuleAnimation then g.tweenService:Create(n.collapsedScale,TweenInfo.new(0.28,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Scale=1}):Play()g.tweenService:Create(n.collapsedGlow,TweenInfo.new(0.25,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Transparency=1}):Play()end end)n:Connect(g.runService.RenderStepped,function()if not p then return end if
 not n.hidden or n.animating then p=false return end local u=o:GetMouseLocation()if not q and(u-s).Magnitude<m then
 return end q=true local v=u+r+t()n.main.Position=UDim2.fromOffset(v.X,v.Y)end)end function l.isNewUser()local n=g.
 localPlayer if not n then return false end if typeof(h.isfile)~='function'or typeof(h.writefile)~='function'then return
@@ -1390,8 +1389,7 @@ connections,e.window:Connect(e.topbarItemInteract.MouseLeave,function()if e.wind
 return end local f=ak.states[c.window.layout.mode][d]if not f then return end ak.applyVisual(c,f,e)end function ae.
 _spinGradients(c)if c.neglectSelector then return end local d=TweenInfo.new(0.7,Enum.EasingStyle.Quint,Enum.
 EasingDirection.Out)for e,f in{c.topbarItemGradient,c.topbarItemStrokeGradient}do f.Rotation=-270 ag.tweenService:Create(f,d,{Rotation=90}):Play()end if c.window.iconTabAnimation and c.topbarItemIcon then c.topbarItemIcon.Rotation=0 ag.tweenService:Create(c.topbarItemIcon,TweenInfo.new(0.62,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Rotation=360}):Play()end end function ae.Select(c,d)if c.window._searching then aj.close(c.window,{showTabs=
-true,jumpTo=false})end c.window.selectedTab=c c.window:_jumpTo(c.tabPage)local e=d or not c.window:_interactive()if not
-c.neglectSelector and not e then c:_applyVisual('selected',am)end for f,g in c.window.tabs do if g~=c.window.selectedTab
+true,jumpTo=false})end c.window.selectedTab=c c.window:_jumpTo(c.tabPage)local e=d or not c.window:_interactive()if not c.neglectSelector and not e then c:_applyVisual('selected',am)if c.window.iconTabAnimation then c:_spinGradients()end end for f,g in c.window.tabs do if g~=c.window.selectedTab
 then g:Deselect(e)end end if c~=c.window.rfSettings and c.window.settingsAction and not e then ag.tweenService:Create(c.
 window.settingsAction.iconLabel,TweenInfo.new(0.25,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency=
 0.6}):Play()end end function ae.Deselect(c,d)if not c.neglectSelector and not d then c:_applyVisual('unselected',am)end
@@ -1868,7 +1866,7 @@ main.Position.X.Offset,I.main.Position.Y.Scale,I.main.Position.Y.Offset+I.size.Y
 function()if I.minimised or I.hidden then return end I:_setContentVisible(true)for L,M in pairs(I.tabs)do if not M.
 neglectSelector and M.topbarItem then M.topbarItem.Visible=true M:_applyVisual(if I.selectedTab==M then'selected'else
 'unselected',K)end end I:_setTabSectionsVisible(true)I:_setTabSectionsShown(true,K)I:_revealElements(0.035,0.4)end)task.
-delay(0.5,function()I.animating=false end)else I.minimised=true af.assign(I.minimiseAction.iconLabel,'Image',ai.icons.maximise)I:_setWindowBlur(false)I:_fadeSelectedElementsOut()for L,M in pairs(I.tabs)do if not M.neglectSelector and M.topbarItem then M:
+delay(0.5,function()I.animating=false end)else I.minimised=true af.assign(I.minimiseAction.iconLabel,'Image',ai.icons.maximise)I:_fadeSelectedElementsOut()for L,M in pairs(I.tabs)do if not M.neglectSelector and M.topbarItem then M:
 _applyVisual('hidden',K)end end I:_setTabSectionsShown(false,K)task.delay(0.3,function()if not I.minimised then return
 end I:_setContentVisible(false)for L,M in pairs(I.tabs)do if not M.neglectSelector and M.topbarItem then M.topbarItem.
 Visible=false end end I:_setTabSectionsVisible(false)end)I:_fadeSurfaces(false,K)f.tweenService:Create(I.main,J,{Size=
