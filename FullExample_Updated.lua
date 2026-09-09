@@ -128,19 +128,6 @@ local Actions = Window:CreateTab({
 
 Actions:CreateSection({Name = "Action Examples"})
 
-Actions:CreateHoldButton({
-    Name = "Hold to confirm",
-    HoldTime = 2,
-    LineColor = Color3.fromRGB(151, 105, 255),
-    Callback = function()
-        Window:Notify({
-            Title = "Hold complete",
-            Content = "The hold callback ran successfully.",
-            Duration = 3,
-        })
-    end,
-})
-
 Actions:CreateColorPicker({
     Name = "Accent color",
     Color = Color3.fromRGB(151, 105, 255),
