@@ -1533,6 +1533,7 @@ if not al.displayGroup then
 local am={window=al.window,tab={tabPage=al.contentFrame},direction=Enum.FillDirection.Vertical,forgetState=false}
 al.displayGroup=az.new(am,{direction='column'})
 end
+if not al.window.hidden then al.contentFrame.Visible=true al.displayGroup.main.Visible=true al.displayGroup:_setShown(true,true)end
 return al.displayGroup
 end
 function ae.CreateButton(al,am)return al:_ensureDisplayGroup():CreateButton(am)end
@@ -1553,7 +1554,7 @@ function ae.CreateGroup(al,am)return al:_ensureDisplayGroup():CreateGroup(am)end
 function ae.Set(ak,al)ak.text=tostring(al)ak.window:_bindLocale(ak.body,'Text',ak.text)ak:
 _applyPresence()end function ae.SetTitle(ak,al)ak.name=tostring(al)ak.window:_bindLocale(ak.title,'Text',ak.name)ak:
 _applyPresence()end function ae._setShown(ak,al,am)if al then ak.window:_revealCommon(ak,am)else ak.window:_hideCommon(
-ak,am)end if ak.displayGroup then ak.displayGroup:_setShown(al,am)end ak.window:_reveal(ak.body,{TextTransparency=if al then aj else 1},am)if ak.imageLabel then ak.window:_reveal(ak.imageLabel,{ImageTransparency=if al then 0 else 1},am)end end af(ae)return ae end)()end,[28]=
+ak,am)end if ak.contentFrame then ak.contentFrame.Visible=al end if ak.displayGroup then ak.displayGroup.main.Visible=al ak.displayGroup:_setShown(al,am)end ak.window:_reveal(ak.body,{TextTransparency=if al then aj else 1},am)if ak.imageLabel then ak.window:_reveal(ak.imageLabel,{ImageTransparency=if al then 0 else 1},am)end end af(ae)return ae end)()end,[28]=
 function()local aa,ab,ac=a(28)local ad return(function(...)local ae={}ae.__index=ae ae.__type='Toast'local af=ab.Parent.
 Parent.utility local ag,ah,ai,aj,ak,al,am,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r=ac(af.variables),ac(af.functions),ac(af.
 constants),ac(af.image),ac(af.HapticEngine),TweenInfo.new(0.6,Enum.EasingStyle.Exponential,Enum.EasingDirection.Out),
