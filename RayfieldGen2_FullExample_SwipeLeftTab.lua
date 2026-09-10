@@ -383,6 +383,52 @@ Display:CreateDivider({
 
 StatusText:Set("Connected. The display elements are responding.")
 
+-- Display cards can contain real controls. The card grows downward
+-- automatically as buttons, toggles, dropdowns, and other controls are added.
+local PetDisplay = Display:CreateText({
+    name = "Pet Spawner",
+    text = "All controls below stay inside the same display card.",
+    imageParagraph = 93364949241311,
+})
+
+PetDisplay:CreateToggle({
+    name = "Auto collect",
+    description = "Automatically collect the selected pet.",
+    flag = "PetAutoCollect",
+    callback = function(value)
+        print("Auto collect:", value)
+    end,
+})
+
+PetDisplay:CreateDropdown({
+    name = "Select pet",
+    options = { "Mecha Dreadscale", "Dragon", "Cat", "Bunny" },
+    value = "Mecha Dreadscale",
+    flag = "SelectedPet",
+    callback = function(value)
+        print("Selected pet:", value)
+    end,
+})
+
+PetDisplay:CreateDropdown({
+    name = "Mutation",
+    options = { "None", "Gold", "Rainbow", "Shiny" },
+    value = "None",
+    flag = "PetMutation",
+})
+
+PetDisplay:CreateButton({
+    name = "Spawn selected pet",
+    description = "This button remains inside the auto-resizing display.",
+    callback = function()
+        Window:Toast({
+            title = "Pet spawned",
+            subtitle = "The display resized automatically.",
+            duration = 3,
+        })
+    end,
+})
+
 ---------------------------------------------------------------------
 -- Messages tab: notifications, toast, popup, changelog popup
 ---------------------------------------------------------------------

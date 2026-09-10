@@ -1626,7 +1626,7 @@ am.Color)end if am.text or am.Text or am.title or am.Title then al:SetText(am.te
 end if am.icon~=nil or am.Icon~=nil then al:SetIcon(am.icon or am.Icon)end end function ae.Remove(al)al.window:
 DestroySubtree(al.main)local am=table.find(al.window.tags,al)if am then table.remove(al.window.tags,am)end if#al.window.
 tags==0 then al.window.tagContainer.Visible=false end end return ae end)()end,[27]=function()local aa,ab,ac=a(27)local
-ad return(function(...)local ae={}ae.__index=ae ae.__type='Text'local af,ag,ah,ai,aj=ac(ab.Parent.Parent.utility.moveable),ac(ab.Parent.Parent.utility.locale),16,14,0.45
+ad return(function(...)local ae={}ae.__index=ae ae.__type='Text'local af,ag,ah,ai,aj,az=ac(ab.Parent.Parent.utility.moveable),ac(ab.Parent.Parent.utility.locale),16,14,0.45
 local function normalizeImageSource(source)
     if type(source)=='number' then return 'rbxassetid://'..tostring(source) end
     if type(source)~='string' then return '' end
@@ -1696,7 +1696,33 @@ TextXAlignment=Enum.TextXAlignment.Left,LayoutOrder=1,TextTransparency=1,Parent=
 FontFace='Font'})am.body=am.window:Create('TextLabel',{Text=ag.t(am.text),Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.
 AutomaticSize.Y,BorderSizePixel=0,BackgroundTransparency=1,RichText=true,TextSize=ai,TextWrapped=true,TextXAlignment=
 Enum.TextXAlignment.Left,LayoutOrder=2,TextTransparency=1,Parent=am.main},{TextColor3='ContentColor',FontFace='Font'})am
-:_applyPresence()return am end function ae._applyPresence(ak)ak.titleRow.Visible=not ak.imageOnly and(ak.name~=''or ak.icon~=nil)ak.body.Visible=not ak.imageOnly and ak.text~=''if ak.contentFrame then ak.contentFrame.Visible=type(ak.content)=='table' and#ak.content>0 end if ak.imageLabel then ak.imageLabel.Visible=ak.image~=nil and ak.image~='' end end function ae.Set(ak,al)ak.text=tostring(al)ak.window:_bindLocale(ak.body,'Text',ak.text)ak:
+:_applyPresence()return am end function ae._applyPresence(ak)ak.titleRow.Visible=not ak.imageOnly and(ak.name~=''or ak.icon~=nil)ak.body.Visible=not ak.imageOnly and ak.text~=''if ak.contentFrame then ak.contentFrame.Visible=type(ak.content)=='table' and#ak.content>0 end if ak.imageLabel then ak.imageLabel.Visible=ak.image~=nil and ak.image~='' end end function ae._ensureDisplayGroup(al)
+if not al.contentFrame then
+al.contentFrame=al.window:Create('Frame',{Name='DisplayControls',Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BorderSizePixel=0,BackgroundTransparency=1,LayoutOrder=3,Parent=al.main})
+al.window:Create('UIListLayout',{Padding=UDim.new(0,6),SortOrder=Enum.SortOrder.LayoutOrder,Parent=al.contentFrame})
+end
+if not al.displayGroup then
+local am={window=al.window,tab={tabPage=al.contentFrame},direction=Enum.FillDirection.Vertical,forgetState=false}
+al.displayGroup=az.new(am,{direction='column'})
+end
+return al.displayGroup
+end
+function ae.CreateButton(al,am)return al:_ensureDisplayGroup():CreateButton(am)end
+function ae.CreateToggle(al,am)return al:_ensureDisplayGroup():CreateToggle(am)end
+function ae.CreateSwitch(al,am)return al:_ensureDisplayGroup():CreateSwitch(am)end
+function ae.CreateSlider(al,am)return al:_ensureDisplayGroup():CreateSlider(am)end
+function ae.CreateDropdown(al,am)return al:_ensureDisplayGroup():CreateDropdown(am)end
+function ae.CreateInput(al,am)return al:_ensureDisplayGroup():CreateInput(am)end
+function ae.CreateKeybind(al,am)return al:_ensureDisplayGroup():CreateKeybind(am)end
+function ae.CreateColorPicker(al,am)return al:_ensureDisplayGroup():CreateColorPicker(am)end
+function ae.CreateStat(al,am)return al:_ensureDisplayGroup():CreateStat(am)end
+function ae.CreateProgress(al,am)return al:_ensureDisplayGroup():CreateProgress(am)end
+function ae.CreateConsole(al,am)return al:_ensureDisplayGroup():CreateConsole(am)end
+function ae.CreateDivider(al,am)return al:_ensureDisplayGroup():CreateDivider(am)end
+function ae.CreateText(al,am)return al:_ensureDisplayGroup():CreateText(am)end
+function ae.CreateImage(al,am)return al:_ensureDisplayGroup():CreateImage(am)end
+function ae.CreateGroup(al,am)return al:_ensureDisplayGroup():CreateGroup(am)end
+function ae.Set(ak,al)ak.text=tostring(al)ak.window:_bindLocale(ak.body,'Text',ak.text)ak:
 _applyPresence()end function ae.SetTitle(ak,al)ak.name=tostring(al)ak.window:_bindLocale(ak.title,'Text',ak.name)ak:
 _applyPresence()end function ae._setShown(ak,al,am)if al then ak.window:_revealCommon(ak,am)else ak.window:_hideCommon(
 ak,am)end ak.window:_reveal(ak.body,{TextTransparency=if al then aj else 1},am)end af(ae)return ae end)()end,[28]=
