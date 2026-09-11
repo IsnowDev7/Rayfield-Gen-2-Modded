@@ -1262,13 +1262,11 @@ math.round(math.abs(i))local k=string.format('%.0f',j)local l=k:reverse():gsub('
 ','then l=l:sub(2)end return if i<0 and j~=0 then'-'..l else l end local function i(j)local k=math.round(j)if k>0 then
 return'+'..h(k)elseif k<0 then return h(k)else return'0'end end function ae.new(j,k)k=if typeof(k)=='table'then k else{}
 local l=setmetatable({tab=assert(j,'Missing argument #1 (Tab expected)'),window=j.window,name=k.name or k.Name or
-'Statistic',icon=k.icon or k.Icon,description=k.description or k.Description,value=if(k.value or k.Value)~=nil then(k.
-value or k.Value)else 0,_hasValue=(k.value or k.Value)~=nil,numberEasing=if(k.numberEasing~=nil)then k.numberEasing
+'Statistic',icon=k.icon or k.Icon,description=k.description or k.Description,value=0,_hasValue=false,numberEasing=if(k.numberEasing~=nil)then k.numberEasing
 elseif k.NumberEasing~=nil then k.NumberEasing else true,changeMode=k.changeMode or k.ChangeMode or'percentage',
 changeBaseline=k.changeBaseline or k.ChangeBaseline or'previous',prefix=k.prefix or k.Prefix or'',suffix=k.suffix or k.
 Suffix or'',compact=k.compact or k.Compact or j.compact or false,display=(k.display or k.Display or'value'),
-_initialValue=if(k.value or k.Value)~=nil then(k.value or k.Value)else nil,_lastChange=0},ae)if l.compact then l:
-_buildCompact()else l:_buildFull()end if l.description then if l.compact then am.warn(`Rayfield: a compact stat has no room for a description, ignoring it on '{
+_initialValue=nil,_lastChange=0,_valueConnection=nil,_valueObject=nil},ae)if l.compact then l:_buildCompact()else l:_buildFull()end local o=k.value or k.Value if typeof(o)=='Instance' and o:IsA('ValueBase')then l:Bind(o)elseif typeof(o)=='number'then l:Set(o)end if l.description then if l.compact then am.warn(`Rayfield: a compact stat has no room for a description, ignoring it on '{
 l.name}'.`)else l.descriptor=ac(ab.Parent.descriptor).new(l.tab,{description=l.description})end end return l end
 function ae._buildFull(j)local k=j.window j.main=k:Create('Frame',{Size=UDim2.new(1,-20,0,90),BorderSizePixel=0,Name=j.
 name,ZIndex=5,BackgroundTransparency=1,Parent=j.tab.tabPage},{BackgroundColor3='StatBackground',BackgroundTransparency=
@@ -1345,7 +1343,7 @@ compact then j:_updateCompactReadout(k,l,p,o,q,m)else j:_updateFullReadouts(k,l,
 ResetBaseline(j,k)local l,m,n=j.value,not j._hasValue,if typeof(k)=='number'then k else j.value j._initialValue=n j.
 value=n j._hasValue=true j._lastChange=0 if j.compact then if j.display=='change'then j.readoutOdo:snap(j:_formatChange(
 0))else j:_showValue(j.readoutOdo,n,l,m)end else j.changeOdo:snap(j:_formatChange(0))j:_showValue(j.valueOdo,n,l,m)end j
-:_setAccent('neutral',0)end function ae._setShown(j,k,l)local m=j.window if j.compact then m:_reveal(j.main,{
+:_setAccent('neutral',0)end function ae.Bind(j,k)assert(typeof(k)=='Instance' and k:IsA('ValueBase'),'Statistic:Bind() - value must be a ValueBase, got '..typeof(k))if j._valueConnection then j._valueConnection:Disconnect()j._valueConnection=nil end j._valueObject=k local function l()if j._valueObject==k and k.Parent then j:Set(k.Value)elseif j._valueObject==k and not k.Parent then if j._valueConnection then j._valueConnection:Disconnect()j._valueConnection=nil end j._valueObject=nil end end j:Set(k.Value)j._valueConnection=k.Changed:Connect(l)return j end end function ae._setShown(j,k,l)local m=j.window if j.compact then m:_reveal(j.main,{
 BackgroundTransparency=if k then(j.window.theme.ElementTransparency or 0)else 1},l)m:_reveal(j.stroke,{Transparency=if k
 then j.window.theme.ElementStrokeTransparency else 1},l)m:_reveal(j.card,{BackgroundTransparency=if k then 0 else 1},l)m
 :_reveal(j.title,{TextTransparency=if k then 0 else 1},l)if j.iconLabel then m:_reveal(j.iconLabel,{ImageTransparency=if
@@ -2182,8 +2180,7 @@ callback:((value:string)->())?}export type KeybindProps={name:string?,descriptio
 string?,value:(EnumItem|string)?,forgetState:boolean?,isMenuToggle:boolean?,hold:boolean?,holdThreshold:number?,callback
 :((value:EnumItem|boolean)->())?,onChanged:((key:EnumItem)->())?}export type ColorPickerProps={name:string?,description:
 string?,icon:(string|number)?,flag:string?,color:Color3?,alpha:number?,forgetState:boolean?,callback:((value:Color3,
-alpha:number)->())?}export type StatProps={name:string?,description:string?,icon:(string|number)?,prefix:string?,suffix:
-string?,value:number?,display:string?,compact:boolean?,changeMode:string?,changeBaseline:string?,numberEasing:boolean?}
+alpha:number)->())?}export type StatProps={name:string?,description:string?,icon:(string|number)?,prefix:string?,suffix:string?,value:(number|ValueBase)?,display:string?,compact:boolean?,changeMode:string?,changeBaseline:string?,numberEasing:boolean?}
 export type ProgressProps={name:string?,description:string?,icon:(string|number)?,range:{number}?,value:number?,steps:
 number?,text:string?,format:((value:number,min:number,max:number)->string)?,showValue:boolean?,indeterminate:boolean?}
 export type ConsoleProps={name:string?,description:string?,text:string?,height:number?,follow:boolean?,maxLines:number?}
@@ -2202,7 +2199,7 @@ Remove:(self:Dropdown,option:string)->()}export type Input=Moveable&Lockable&{va
 skipCallback:boolean?)->()}export type Keybind=Moveable&Lockable&{value:EnumItem,Set:(self:Keybind,value:EnumItem|string
 ,skipChanged:boolean?)->()}export type ColorPicker=Moveable&Lockable&{value:Color3,alpha:number,Set:(self:ColorPicker,
 value:Color3|string,skipCallback:boolean?)->(),SetAlpha:(self:ColorPicker,alpha:number,skipCallback:boolean?)->()}export
-type Stat=Moveable&{value:number,Set:(self:Stat,value:number)->(),ResetBaseline:(self:Stat,value:number?)->()}export
+type Stat=Moveable&{value:number,Set:(self:Stat,value:number)->(),ResetBaseline:(self:Stat,value:number?)->(),Bind:(self:Stat,value:ValueBase)->()}export
 type Progress=Moveable&{value:number,Set:(self:Progress,value:number)->(),Get:(self:Progress)->number,GetPercentage:(
 self:Progress)->number,SetRange:(self:Progress,min:number,max:number)->(),SetText:(self:Progress,text:string?)->(),
 SetIndeterminate:(self:Progress,state:boolean)->(),Remove:(self:Progress)->()}export type Console=Moveable&{Set:(self:
