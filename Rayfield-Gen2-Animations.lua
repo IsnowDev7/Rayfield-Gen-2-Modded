@@ -33,8 +33,8 @@ Position=UDim2.fromScale(0.5,0.5)n.Size=UDim2.fromOffset(262,60)n.Parent=m retur
 WindowProps):j.Window local o,p:j.Window?,q:(()->())?=(l())if f.secureMode then g.preload(function(r)if r<=0 then return
 end local function s()if not p or p.unloaded then return end p:Notify{title=h.resolve'Secure mode',content=if r==1 then
 h.resolve"An asset couldn't be cached and won't appear."else h.resolve"Some assets couldn't be cached and won't appear."
-}end if p then s()else q=s end end)end if n.IntroCustom==true or n.introCustom==true then local introRunner=k._playCustomIntro if type(introRunner)=='function' then pcall(introRunner)end end local r,s=pcall(function()return(d(c.components.window)::WindowModule).new(n)end)
-if not r then o:Destroy()error(s,0)end local t=s::j.Window p=t if q then task.spawn(q)q=nil end if f.secureMode then
+}end if p then s()else q=s end end)end local r,s=pcall(function()return(d(c.components.window)::WindowModule).new(n)end)
+if not r then o:Destroy()error(s,0)end local t=s::j.Window p=t if n.IntroCustom==true or n.introCustom==true then local introRunner=k._playCustomIntro if type(introRunner)=='function' then pcall(introRunner)end end if q then task.spawn(q)q=nil end if f.secureMode then
 task.spawn(function()local u,v=f.fontManager:loadFont(i.fontAsset,Enum.FontWeight.Medium),f.fontManager:loadFont(i.
 fontAsset,Enum.FontWeight.SemiBold)if not t.unloaded and u and v and u~=f.fallbackFont and v~=f.fallbackFont then t:
 ChangeTheme{Font=u,TitleFont=v}end end)end task.spawn(function()task.wait(0.5)o:Destroy()task.wait(0.5)if not t.unloaded
