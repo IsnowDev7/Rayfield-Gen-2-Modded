@@ -30,14 +30,14 @@ ScreenInsets.DeviceSafeInsets m.ZIndexBehavior=Enum.ZIndexBehavior.Sibling m.Par
 'ImageLabel'n.Name='Banner'n.AnchorPoint=Vector2.new(0.5,0.5)n.BackgroundColor3=Color3.fromRGB(255,255,255)n.
 BackgroundTransparency=1 n.BorderColor3=Color3.fromRGB(0,0,0)n.BorderSizePixel=0 n.Image=g.resolve(i.icons.banner)n.
 Position=UDim2.fromScale(0.5,0.5)n.Size=UDim2.fromOffset(262,60)n.Parent=m return m end function k.CreateWindow(m,n:j.
-WindowProps):j.Window local o,p:j.Window?,q:(()->())?=(l())if f.secureMode then g.preload(function(r)if r<=0 then return
+WindowProps):j.Window local o,p:j.Window?,q:(()->())?=(if n.IntroCustom==true or n.introCustom==true then nil else l())if f.secureMode then g.preload(function(r)if r<=0 then return
 end local function s()if not p or p.unloaded then return end p:Notify{title=h.resolve'Secure mode',content=if r==1 then
 h.resolve"An asset couldn't be cached and won't appear."else h.resolve"Some assets couldn't be cached and won't appear."
 }end if p then s()else q=s end end)end local r,s=pcall(function()return(d(c.components.window)::WindowModule).new(n)end)
-if not r then o:Destroy()error(s,0)end local t=s::j.Window p=t if n.IntroCustom==true or n.introCustom==true then local introRunner=k._playCustomIntro if type(introRunner)=='function' then pcall(introRunner)end end if q then task.spawn(q)q=nil end if f.secureMode then
+if not r then if o then o:Destroy()end error(s,0)end local t=s::j.Window p=t if n.IntroCustom==true or n.introCustom==true then local introRunner=k._playCustomIntro if type(introRunner)=='function' then pcall(introRunner)end end if q then task.spawn(q)q=nil end if f.secureMode then
 task.spawn(function()local u,v=f.fontManager:loadFont(i.fontAsset,Enum.FontWeight.Medium),f.fontManager:loadFont(i.
 fontAsset,Enum.FontWeight.SemiBold)if not t.unloaded and u and v and u~=f.fallbackFont and v~=f.fallbackFont then t:
-ChangeTheme{Font=u,TitleFont=v}end end)end task.spawn(function()task.wait(0.5)o:Destroy()task.wait(0.5)if not t.unloaded
+ChangeTheme{Font=u,TitleFont=v}end end)end task.spawn(function()task.wait(0.5)if o then o:Destroy()end task.wait(0.5)if not t.unloaded
 then t:Show()end end)return t end return k end)()end,[3]=function()local b,c,d=a(3)local e return(function(...)local f={
 }f.__index=f f.__type='Action'local g=c.Parent.Parent.utility local h,i,j=d(g.variables),d(g.log),d(g.HapticEngine)
 function f.new(k,l)l=if typeof(l)=='table'then l else{}local m=setmetatable({window=assert(k,
