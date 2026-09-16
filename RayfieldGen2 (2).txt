@@ -34,7 +34,7 @@ WindowProps):j.Window local o,p:j.Window?,q:(()->())?=(l())if f.secureMode then 
 end local function s()if not p or p.unloaded then return end p:Notify{title=h.resolve'Secure mode',content=if r==1 then
 h.resolve"An asset couldn't be cached and won't appear."else h.resolve"Some assets couldn't be cached and won't appear."
 }end if p then s()else q=s end end)end local r,s=pcall(function()return(d(c.components.window)::WindowModule).new(n)end)
-if not r then o:Destroy()error(s,0)end local t=s::j.Window p=t if q then task.spawn(q)q=nil end if f.secureMode then
+if not r then o:Destroy()error(s,0)end local t=s::j.Window p=t if n and (n.AutoExecute==true or n.autoExecute==true) then local function u()local v=(getgenv and getgenv())or _G if not v or v.__RayfieldAutoExecuteQueued then return end local w=nil if type(v.RayfieldAutoExecuteScript)=='string'and v.RayfieldAutoExecuteScript~=''then w=v.RayfieldAutoExecuteScript elseif type(v.RayfieldAutoExecuteUrl)=='string'and v.RayfieldAutoExecuteUrl~=''then w='loadstring(game:HttpGet('..string.format('%q',v.RayfieldAutoExecuteUrl)..'))()' elseif type(v.RayfieldAutoExecute)=='function'then w='pcall(function()getgenv().RayfieldAutoExecute()end)'end if not w then return end local x=queue_on_teleport or queueonteleport or (syn and syn.queue_on_teleport)if type(x)=='function'then v.__RayfieldAutoExecuteQueued=true pcall(x,w)end end pcall(u)end if q then task.spawn(q)q=nil end if f.secureMode then
 task.spawn(function()local u,v=f.fontManager:loadFont(i.fontAsset,Enum.FontWeight.Medium),f.fontManager:loadFont(i.
 fontAsset,Enum.FontWeight.SemiBold)if not t.unloaded and u and v and u~=f.fallbackFont and v~=f.fallbackFont then t:
 ChangeTheme{Font=u,TitleFont=v}end end)end task.spawn(function()task.wait(0.5)o:Destroy()task.wait(0.5)if not t.unloaded
@@ -1711,7 +1711,7 @@ subheading=I.subtitle or I.Subtitle,layout=K,size=w(K.mode),instances={},connect
 or I.ShowIconOnly or false,profileText=I.profile or I.Profile,blurBackground=I.BlurBackground==true, capsuleAnimation=I.CapsuleAnimation==true,shinyEffect=I.ShinyEffect==true,themeAnimation=I.ThemeAnimation or I.themeAnimation,transitionTime=tonumber(I.TransitionTime)or tonumber(I.transitionTime)or(type(I.TransitionTime)=='string'and tonumber(string.match(I.TransitionTime,'%d+%.?%d*')))or(type(I.transitionTime)=='string'and tonumber(string.match(I.transitionTime,'%d+%.?%d*')))or 0.5,iconTabAnimation=false,themeProperties={},localeProperties={},tabs={},tabSections
 ={},tags={},selectedTab=nil,theme=H(I.theme or I.Theme),controls={},configuration=(function()local L=I.configuration or
 I.Configuration if not L then return{}end return{autoSave=L.autoSave or L.AutoSave,autoLoad=L.autoLoad or L.AutoLoad,
-fileName=L.fileName or L.FileName,customFolder=L.customFolder or L.CustomFolder}end)()},h)L.Flags=setmetatable({},{
+fileName=L.fileName or L.FileName,customFolder=L.customFolder or L.CustomFolder,autoExecute=L.autoExecute==true or L.AutoExecute==true}end)()},h)L.Flags=setmetatable({},{
 __index=function(M,N)local O=L.controls[N]return O and O.value end,__newindex=function(M,N,O)local P=L.controls[N]if not
 P then ak.warn("Rayfield: no flag '"..tostring(N).."' to set")return end P:Set(O)end,__iter=function()local M return
 function()local N M,N=next(L.controls,M)if M then return M,N.value end return nil end end})L.settings={toggleKeybind=
