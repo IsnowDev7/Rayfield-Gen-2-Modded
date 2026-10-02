@@ -31,3 +31,32 @@ DisplayCard:CreateToggle({ name = "Auto collect", callback = function(value) end
 DisplayCard:CreateDropdown({ name = "Select pet", options = { "Cat", "Dog" } })
 DisplayCard:CreateButton({ name = "Spawn", callback = function() end })
 ```
+
+## Automatic icon and image sources
+
+Window, tab, and element `icon` values now share one resolver. The resolver accepts:
+
+- Numeric Roblox asset IDs, such as `4483362458` or `"rbxassetid://4483362458"`.
+- Lucide names, such as `"house"`, `"settings"`, or explicit `"lucide:house"`. The Lucide mapping is loaded lazily from the Footagesus Icons library.
+- Imgur image links, including `imgur.com/id`, `imgur.com/id.png`, and `i.imgur.com/id.jpeg`.
+- GitHub blob links, which are converted to `raw.githubusercontent.com` URLs.
+- Direct GitHub raw and CDN image URLs.
+
+When the executor exposes `getcustomasset` or `getsynasset`, remote images are downloaded into Rayfield's asset folder, converted into local custom assets, and cached. Without those executor APIs, the original URL is retained as a fallback.
+
+```lua
+local Window = Rayfield:CreateWindow({
+    Name = "Icon Example",
+    Icon = "lucide:layout-dashboard",
+})
+
+local Tab = Window:CreateTab({
+    Name = "Main",
+    Icon = "house",
+})
+
+local ImageTab = Window:CreateTab({
+    Name = "Remote Image",
+    Icon = "https://i.imgur.com/kd65fBV.jpeg",
+})
+```
