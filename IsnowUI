@@ -1936,105 +1936,61 @@ if I.MainPreset==true then
  info:Select(true)
 end
 function h.CreatePerformanceMonitor(I)
- if I.performanceMonitor then pcall(function()I.performanceMonitor:Destroy()end)end
- local UIS=game:GetService('UserInputService')
- local RunService=game:GetService('RunService')
- local StatsService=game:GetService('Stats')
- local monitor={expanded=true,dragging=false,moved=false,connections={}}
- local frame=Instance.new('Frame')
- frame.Name='PerformanceMonitor'
- frame.Size=UDim2.fromOffset(490,46)
- frame.Position=UDim2.new(0,14,0,14)
- frame.BackgroundColor3=Color3.fromRGB(12,12,12)
- frame.BorderSizePixel=0
- frame.ZIndex=220
- frame.Parent=I.screenGui
- local corner=Instance.new('UICorner')
- corner.CornerRadius=UDim.new(0,8)
- corner.Parent=frame
- local stroke=Instance.new('UIStroke')
- stroke.Thickness=2
- stroke.Color=Color3.fromRGB(0,0,0)
- stroke.Parent=frame
- local label=Instance.new('TextLabel')
- label.Size=UDim2.fromScale(1,1)
- label.BackgroundTransparency=1
- label.TextColor3=Color3.fromRGB(255,255,255)
- label.TextSize=18
- label.TextXAlignment=Enum.TextXAlignment.Center
- label.TextYAlignment=Enum.TextYAlignment.Center
- label.ZIndex=221
- label.Parent=frame
- local button=Instance.new('TextButton')
- button.Size=UDim2.fromScale(1,1)
- button.BackgroundTransparency=1
- button.Text=''
- button.TextTransparency=1
- button.ZIndex=222
- button.Parent=frame
- table.insert(I.instances,frame)
- table.insert(I.instances,corner)
- table.insert(I.instances,stroke)
- table.insert(I.instances,label)
- table.insert(I.instances,button)
- local function add(connection)
-  table.insert(monitor.connections,connection)
-  table.insert(I.connections,connection)
- end
+ if I.performanceMonitor then I.performanceMonitor:Destroy()end
+ local o=I:Create('Frame',{Name='PerformanceMonitor',Size=UDim2.fromOffset(490,46),Position=UDim2.new(0,14,0,14),BackgroundColor3=Color3.fromRGB(12,12,12),BorderSizePixel=0,ZIndex=220,Parent=I.screenGui})
+ I:Create('UICorner',{CornerRadius=UDim.new(0,8),Parent=o})
+ local stroke=I:Create('UIStroke',{Thickness=2,Color=Color3.fromRGB(0,0,0),Parent=o})
+ local glow=I:CreateGlow(o,Color3.fromRGB(255,255,255),20,1)
+ local icon=I:Create('ImageLabel',{Image=I.icon or'',Size=UDim2.fromOffset(28,28),Position=UDim2.new(0,8,0.5,0),AnchorPoint=Vector2.new(0,0.5),BackgroundTransparency=1,ZIndex=221,Parent=o})
+ local label=I:Create('TextLabel',{Text='',Size=UDim2.new(1,-52,1,0),Position=UDim2.new(0,48,0,0),BackgroundTransparency=1,TextSize=18,TextColor3=Color3.fromRGB(255,255,255),TextXAlignment=Enum.TextXAlignment.Left,TextYAlignment=Enum.TextYAlignment.Center,ZIndex=221,Parent=o})
+ local hit=I:Create('TextButton',{BackgroundTransparency=1,Size=UDim2.fromScale(1,1),Text='',TextTransparency=1,ZIndex=222,Parent=o})
+ local monitor={main=o,hit=hit,expanded=true,dragging=false,moved=false,connections={}}
  local function ping()
-  local ok,item=pcall(function()return StatsService.Network.ServerStatsItem['Data Ping']end)
+  local ok,item=pcall(function()return game:GetService('Stats').Network.ServerStatsItem['Data Ping']end)
   if not ok or not item then return 0 end
   local okValue,value=pcall(function()return item:GetValueString()end)
   if okValue and type(value)=='string'then return tonumber(string.match(value,'%d+%.?%d*'))or 0 end
   return 0
  end
- local function update(fps,ms)
-  label.Text=tostring(I.name or'Rayfield')..'  |  '..tostring(fps)..' fps  |  '..tostring(ms)..' ms'
+ local function update(fps,ms)label.Text=tostring(I.name or'Rayfield')..'  |  '..tostring(fps)..' fps  |  '..tostring(ms)..' ms'end
+ local function setExpanded(value)
+  monitor.expanded=value
+  icon.Visible=value
+  label.Visible=value
+  if not value then label.Text='...'end
+  o.Size=value and UDim2.fromOffset(490,46)or UDim2.fromOffset(42,42)
+  stroke.Transparency=value and I.theme.ElementStrokeTransparency or 1
+  glow.Transparency=value and 0.75 or 1
  end
  function monitor:Destroy()
   for _,connection in ipairs(self.connections)do pcall(function()connection:Disconnect()end)end
-  pcall(function()frame:Destroy()end)
+  pcall(function()o:Destroy()end)
+  if I.performanceMonitor==self then I.performanceMonitor=nil end
  end
- add(button.InputBegan:Connect(function(input,processed)
+ local input=f.userInputService
+ local run=f.runService
+ local function add(connection)table.insert(monitor.connections,connection)end
+ add(I:ConnectFor(monitor,hit.InputBegan,function(inputObject,processed)
   if processed then return end
-  local kind=input.UserInputType.Name
+  local kind=inputObject.UserInputType.Name
   if kind~='MouseButton1'and kind~='Touch'then return end
-  monitor.dragging=true
-  monitor.moved=false
-  monitor.anchor=frame.AbsolutePosition-UIS:GetMouseLocation()
+  monitor.dragging=true monitor.moved=false monitor.start=input:GetMouseLocation()
+  monitor.offset=o.AbsolutePosition-monitor.start
+  if I.capsuleAnimation then f.tweenService:Create(o,TweenInfo.new(0.2,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Size=UDim2.fromOffset(502,46)}):Play()f.tweenService:Create(glow,TweenInfo.new(0.18,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Transparency=0.25}):Play()end
  end))
- add(UIS.InputChanged:Connect(function(input)
-  if not monitor.dragging then return end
-  local kind=input.UserInputType.Name
-  if kind~='MouseMovement'and kind~='Touch'then return end
-  monitor.moved=true
-  local mouse=UIS:GetMouseLocation()
-  frame.Position=UDim2.fromOffset(math.max(4,mouse.X+monitor.anchor.X),math.max(4,mouse.Y+monitor.anchor.Y))
- end))
- add(UIS.InputEnded:Connect(function(input)
-  local kind=input.UserInputType.Name
+ add(I:Connect(input.InputEnded,function(inputObject)
+  local kind=inputObject.UserInputType.Name
   if kind~='MouseButton1'and kind~='Touch'then return end
   if not monitor.dragging then return end
   monitor.dragging=false
-  if not monitor.moved then
-   monitor.expanded=not monitor.expanded
-   frame.Size=monitor.expanded and UDim2.fromOffset(490,46)or UDim2.fromOffset(42,42)
-   label.Text=monitor.expanded and label.Text or '...'
-  end
+  if I.capsuleAnimation then f.tweenService:Create(o,TweenInfo.new(0.28,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Size=monitor.expanded and UDim2.fromOffset(490,46)or UDim2.fromOffset(42,42)}):Play()f.tweenService:Create(glow,TweenInfo.new(0.25,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Transparency=monitor.expanded and 0.75 or 1}):Play()end
+  if not monitor.moved then setExpanded(not monitor.expanded)end
  end))
- local frames,elapsed=0,0
- add(RunService.RenderStepped:Connect(function(delta)
-  if not monitor.expanded then return end
-  frames+=1
-  elapsed+=delta
-  if elapsed<0.5 then return end
-  update(math.floor(frames/elapsed+0.5),math.floor(ping()+0.5))
-  frames=0
-  elapsed=0
+ add(I:Connect(run.RenderStepped,function(delta)
+  if monitor.dragging then local mouse=input:GetMouseLocation()if not monitor.moved and(mouse-monitor.start).Magnitude>=4 then monitor.moved=true end if monitor.moved then local inset=if I.screenGui.IgnoreGuiInset then f.guiService:GetGuiInset()else Vector2.zero local position=mouse+monitor.offset+inset o.Position=UDim2.fromOffset(position.X,position.Y)end end
+  monitor.clock=(monitor.clock or 0)+delta monitor.frames=(monitor.frames or 0)+1 if monitor.clock<0.5 or not monitor.expanded then return end update(math.floor(monitor.frames/monitor.clock+0.5),math.floor(ping()+0.5))monitor.clock=0 monitor.frames=0
  end))
- update(0,0)
- I.performanceMonitor=monitor
- return monitor
+ update(0,0)I.performanceMonitor=monitor return monitor
 end
 if I.PerformanceMonitor or I.performanceMonitor or I.FPSMonitor then L:CreatePerformanceMonitor(I.PerformanceMonitor or I.performanceMonitor or I.FPSMonitor)end return L end function h._syncShinyEffect(I)if not I.shinyEffect or not I.shinyGradient then return end if I._shinyAnimating then return end I._shinyAnimating=true I._shinyGeneration=(I._shinyGeneration or 0)+1 local J=I._shinyGeneration task.spawn(function()while I._shinyGeneration==J and not I.unloaded do I.shinyGradient.Offset=Vector2.new(0,-1.5)local K=f.tweenService:Create(I.shinyGradient,TweenInfo.new(2.8,Enum.EasingStyle.Quint,Enum.EasingDirection.InOut),{Offset=Vector2.new(0,1.5)})I._shinyTween=K K:Play()K.Completed:Wait()task.wait(0.7)end I._shinyAnimating=false I._shinyTween=nil end)end function
 h._syncLiveAnimation(I)if not I.theme.LiveAnimation then I._liveAnimating=false return end if I._liveAnimating then
