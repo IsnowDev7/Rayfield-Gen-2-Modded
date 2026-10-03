@@ -1887,7 +1887,7 @@ if I.MainPreset==true then
   return L:Create('TextLabel',{Text=text,RichText=true,TextSize=size,TextWrapped=true,TextXAlignment=Enum.TextXAlignment.Left,BackgroundTransparency=1,Position=pos,Size=UDim2.new(1,-32,0,24),Parent=parent},{TextColor3='ContentColor',FontFace=font or'Font'})
  end
  local function panel(name,height)
-  local frame=L:Create('Frame',{Name=name,Size=UDim2.new(1,-40,0,height),BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,BorderSizePixel=0,Parent=info.tabPage})
+  local frame=L:Create('Frame',{Name=name,Size=UDim2.new(1,-40,0,height),BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=0.18,BorderSizePixel=0,Parent=info.tabPage})
   L:StyleElementBody(frame)
   L:Create('UICorner',{CornerRadius=UDim.new(0,12),Parent=frame})
   return frame
@@ -1911,19 +1911,11 @@ if I.MainPreset==true then
  local nameLabel=label(profile,display,21,UDim2.fromOffset(106,43),'TitleFont')
  local handleLabel=label(profile,'@'..username,13,UDim2.fromOffset(106,68),'Font')
  local profileState={hideName=false,hideProfile=false}
- local function toggleCard(name,x)
-  local card=L:Create('Frame',{Name=name,Size=UDim2.fromOffset(130,48),Position=UDim2.fromOffset(x,100),BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,BorderSizePixel=0,Parent=profile})
-  L:StyleElementBody(card)
-  L:Create('UICorner',{CornerRadius=UDim.new(0,10),Parent=card})
-  return card
- end
- local nameCard=toggleCard('NameTogglePanel',18)
  local nameToggle=info:CreateToggle{name='Name',icon='lucide:eye-off',value=false,forgetState=true,callback=function(v)profileState.hideName=v if v then nameLabel.Text='******'else nameLabel.Text=display end nameLabel.Visible=true end}
- nameToggle.main.Parent=nameCard nameToggle._fixedWidth=130 nameToggle.main.Size=UDim2.fromOffset(130,41) nameToggle.container.Size=UDim2.fromOffset(84,16) nameToggle.title.Size=UDim2.fromOffset(64,16) nameToggle.title.AutomaticSize=Enum.AutomaticSize.None nameToggle.title.TextTruncate=Enum.TextTruncate.AtEnd
- local profileCard=toggleCard('ProfileTogglePanel',158)
+ nameToggle.main.Parent=profile nameToggle.main.Position=UDim2.fromOffset(18,100) nameToggle._fixedWidth=180 nameToggle.main.Size=UDim2.fromOffset(180,41) nameToggle.container.Size=UDim2.fromOffset(90,16) nameToggle.title.Size=UDim2.fromOffset(65,16) nameToggle.title.AutomaticSize=Enum.AutomaticSize.None nameToggle.title.TextTruncate=Enum.TextTruncate.AtEnd
  local profileToggle
  profileToggle=info:CreateToggle{name='Profile',icon='lucide:user-shield',value=false,forgetState=true,callback=function(v)profileState.hideProfile=v avatar.Visible=not v profileEye.Visible=v if profileToggle and profileToggle.iconLabel then profileToggle.iconLabel.Image=af.resolve(v and 'lucide:eye-off' or 'lucide:user-shield') end if v then handleLabel.Text='@******'else handleLabel.Text='@'..username end end}
- profileToggle.main.Parent=profileCard profileToggle._fixedWidth=130 profileToggle.main.Size=UDim2.fromOffset(130,41) profileToggle.container.Size=UDim2.fromOffset(84,16) profileToggle.title.Size=UDim2.fromOffset(64,16) profileToggle.title.AutomaticSize=Enum.AutomaticSize.None profileToggle.title.TextTruncate=Enum.TextTruncate.AtEnd
+ profileToggle.main.Parent=profile profileToggle.main.Position=UDim2.fromOffset(208,100) profileToggle._fixedWidth=180 profileToggle.main.Size=UDim2.fromOffset(180,41) profileToggle.container.Size=UDim2.fromOffset(90,16) profileToggle.title.Size=UDim2.fromOffset(65,16) profileToggle.title.AutomaticSize=Enum.AutomaticSize.None profileToggle.title.TextTruncate=Enum.TextTruncate.AtEnd
  local gamePanel=panel('GamePanel',154)
  local gameThumb=L:Create('ImageLabel',{Image=af.resolve('rbxthumb://type=GameIcon&id='..tostring(game.GameId)..'&w=150&h=150'),Size=UDim2.fromOffset(72,72),Position=UDim2.fromOffset(18,18),BackgroundTransparency=1,ImageTransparency=0,Parent=gamePanel})
  L:Create('UICorner',{CornerRadius=UDim.new(0,10),Parent=gameThumb})
