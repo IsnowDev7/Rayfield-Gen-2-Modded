@@ -1731,7 +1731,7 @@ return J end function h.new(I)I=if typeof(I)=='table'then I else{}if I.translati
 .translations or I.Translations)end if I.translator or I.Translator then aj.translator=I.translator or I.Translator end
 aj.setActive(I.locale or I.Locale or aj.detect())local J=I.fallbackFont or I.FallbackFont if J then f.setFallbackFont(J)
 end local K=z(I.sidebarLayout or I.SidebarLayout)if K and K.mode=='sidebar' then local requested=I.SideBarWidth or I.SidebarWidth or I.sidebarWidth or I.sidebar_width local width=tonumber(requested)or(type(requested)=='string'and tonumber(string.match(requested,'%d+%.?%d*')))if width then K=table.clone(K)K.railWidth=math.clamp(width,40,480)K.railCollapsedWidth=math.clamp(math.min(K.railCollapsedWidth,K.railWidth),40,K.railWidth)K.railCollapseBelow=math.max(K.railCollapseBelow,K.railWidth+370)end end local L=setmetatable({name=I.name or I.Name or'Rayfield Window',
-subheading=I.subtitle or I.Subtitle,layout=K,size=w(K.mode),instances={},connections={},icon=af.resolve(I.icon or I.Icon),showName=I
+subheading=I.subtitle or I.Subtitle,layout=K,size=w(K.mode),instances={},connections={},icon=af.resolve(I.icon or I.Icon),iconSize=math.clamp(tonumber(I.IconSize or I.iconSize) or 40,24,96),showName=I
 .showName or I.ShowName or'Rayfield',showIcon=I.showIcon or I.ShowIcon or ai.icons.rayfield,showIconOnly=I.showIconOnly
 or I.ShowIconOnly or false,profileText=I.profile or I.Profile,blurBackground=I.BlurBackground==true, capsuleAnimation=I.CapsuleAnimation==true,shinyEffect=I.ShinyEffect==true,themeAnimation=I.ThemeAnimation or I.themeAnimation,transitionTime=tonumber(I.TransitionTime)or tonumber(I.transitionTime)or(type(I.TransitionTime)=='string'and tonumber(string.match(I.TransitionTime,'%d+%.?%d*')))or(type(I.transitionTime)=='string'and tonumber(string.match(I.transitionTime,'%d+%.?%d*')))or 0.5,iconTabAnimation=false,themeProperties={},localeProperties={},tabs={},tabSections
 ={},tags={},selectedTab=nil,theme=H(I.theme or I.Theme),controls={},configuration=(function()local L=I.configuration or
@@ -1828,7 +1828,7 @@ if L.name then L.title=L:Create('TextLabel',{Text=aj.t(L.name),FontFace=f.brandF
 fromOffset(50,20),AutomaticSize=Enum.AutomaticSize.X,BackgroundTransparency=1,TextSize=20,TextXAlignment=Enum.
 TextXAlignment.Left,TextWrapped=true,TextTransparency=1,Parent=L.titleContainer},{FontFace='Font',TextColor3=
 'TitlingColor'})end if L.icon then L.topbarIcon=L:Create('ImageLabel',{Image=L.icon,BackgroundTransparency=1,Size=UDim2.
-fromOffset(32,32),ImageTransparency=1,Parent=L.topContainer},{ImageColor3='TitlingColor'})end if L.subheading then L.
+fromOffset(L.iconSize,L.iconSize),ImageTransparency=1,Parent=L.topContainer},{ImageColor3='TitlingColor'})end if L.subheading then L.
 subtitle=L:Create('TextLabel',{Text=aj.t(L.subheading),Size=UDim2.fromOffset(50,12),AutomaticSize=Enum.AutomaticSize.X,
 BackgroundTransparency=1,TextSize=12,TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=true,TextTransparency=1,Parent=
 L.titleContainer},{TextColor3='TitlingColor',FontFace='Font'})end L.tagContainer=L:Create('Frame',{AnchorPoint=Vector2.
@@ -2322,7 +2322,7 @@ ToggleKnobOff=Color3.fromRGB(236,220,226),StatBackground=Color3.fromRGB(28,20,24
 fromRGB(170,122,140)}end)()end,[38]=function()local aa,ab,ac=a(38)local ad return(function(...)export type Theme=string|
 {[string]:any}export type Translator=(source:string,localeId:string)->string?export type Translations={[string]:{[string
 ]:string}}export type WindowConfiguration={autoSave:boolean?,autoLoad:boolean?,fileName:string?,customFolder:string?}
-export type WindowProps={name:string?,subtitle:string?,theme:Theme?,icon:(string|number)?,showName:string?,showIcon:(
+export type WindowProps={name:string?,subtitle:string?,theme:Theme?,icon:(string|number)?,IconSize:number?,showName:string?,showIcon:(
 string|number)?,showIconOnly:boolean?,sidebarLayout:boolean?,profile:string?,BlurBackground:boolean?,CapsuleAnimation:boolean?,IconTabAnimation:boolean?,configuration:WindowConfiguration?,
 fallbackFont:(Font|Enum.Font)?,SideBarWidth:(number|string)?,locale:string?,translations:Translations?,translator:Translator?,ThemeAnimation:any?,TransitionTime:number?,ShinyEffect:boolean?,AutoExecute:(boolean|string)?,AfkSystem:boolean?,AutoRejoin:boolean?,MainPreset:boolean?}export type TabProps={
 name:string?,icon:(string|number)?}export type TagProps={text:string?,title:string?,icon:(string|number)?,color:Color3?,
