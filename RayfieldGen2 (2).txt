@@ -1734,7 +1734,7 @@ aj.setActive(I.locale or I.Locale or aj.detect())local J=I.fallbackFont or I.Fal
 end local K=z(I.sidebarLayout or I.SidebarLayout)if K and K.mode=='sidebar' then local requested=I.SideBarWidth or I.SidebarWidth or I.sidebarWidth or I.sidebar_width local width=tonumber(requested)or(type(requested)=='string'and tonumber(string.match(requested,'%d+%.?%d*')))if width then K=table.clone(K)K.railWidth=math.clamp(width,40,480)K.railCollapsedWidth=math.clamp(math.min(K.railCollapsedWidth,K.railWidth),40,K.railWidth)K.railCollapseBelow=math.max(K.railCollapseBelow,K.railWidth+370)end end local L=setmetatable({name=I.name or I.Name or'Rayfield Window',
 subheading=I.subtitle or I.Subtitle,layout=K,size=w(K.mode),instances={},connections={},icon=I.icon or I.Icon,showName=I
 .showName or I.ShowName or'Rayfield',showIcon=I.showIcon or I.ShowIcon or ai.icons.rayfield,showIconOnly=I.showIconOnly
-or I.ShowIconOnly or false,profileText=I.profile or I.Profile,blurBackground=I.BlurBackground==true, capsuleAnimation=I.CapsuleAnimation==true,shinyEffect=I.ShinyEffect==true,themeAnimation=I.ThemeAnimation or I.themeAnimation,transitionTime=tonumber(I.TransitionTime)or tonumber(I.transitionTime)or(type(I.TransitionTime)=='string'and tonumber(string.match(I.TransitionTime,'%d+%.?%d*')))or(type(I.transitionTime)=='string'and tonumber(string.match(I.transitionTime,'%d+%.?%d*')))or 0.5,iconTabAnimation=false,unloadKeybind=I.UnloadKeybind or I.unloadKeybind,themeProperties={},localeProperties={},tabs={},tabSections
+or I.ShowIconOnly or false,profileText=I.profile or I.Profile,blurBackground=I.BlurBackground==true, capsuleAnimation=I.CapsuleAnimation==true,shinyEffect=I.ShinyEffect==true,themeAnimation=I.ThemeAnimation or I.themeAnimation,transitionTime=tonumber(I.TransitionTime)or tonumber(I.transitionTime)or(type(I.TransitionTime)=='string'and tonumber(string.match(I.TransitionTime,'%d+%.?%d*')))or(type(I.transitionTime)=='string'and tonumber(string.match(I.transitionTime,'%d+%.?%d*')))or 0.5,iconTabAnimation=false,themeProperties={},localeProperties={},tabs={},tabSections
 ={},tags={},selectedTab=nil,theme=H(I.theme or I.Theme),controls={},configuration=(function()local L=I.configuration or
 I.Configuration if not L then return{}end return{autoSave=L.autoSave or L.AutoSave,autoLoad=L.autoLoad or L.AutoLoad,
 fileName=L.fileName or L.FileName,customFolder=L.customFolder or L.CustomFolder}end)()},h)
@@ -1957,7 +1957,7 @@ _watchViewport(I)local J,K:RBXScriptConnection?=false local function L()if J the
 CurrentCamera if N then K=I:Connect(N:GetPropertyChangedSignal'ViewportSize',L)end L()end I:Connect(f.workspace:
 GetPropertyChangedSignal'CurrentCamera',M)M()local N=0 I:Connect(f.runService.Heartbeat,function(O:number)N+=O if N<v
 then return end N=0 I:_applyWindowSize()end)end function h._bindKeybind(I)I:Connect(f.userInputService.InputBegan,
-function(J,K)if K or I._recordingKeybind then return end if I.unloadKeybind and J.KeyCode==I.unloadKeybind then I:Unload()return end if J.KeyCode==I.settings.toggleKeybind or J.UserInputType==I.
+function(J,K)if K or I._recordingKeybind then return end if J.KeyCode==I.settings.toggleKeybind or J.UserInputType==I.
 settings.toggleKeybind then I:ToggleHide()end end)end function h._bindMouseOverride(I)local J=f.userInputService
 local function K()return I.settings.mouseOverride and not I.hidden and not I.minimised end local function L()if not K()
 then return end if J:IsMouseButtonPressed(Enum.UserInputType.MouseButton2)then return end if J.MouseBehavior~=Enum.
@@ -2254,7 +2254,7 @@ fromRGB(170,122,140)}end)()end,[38]=function()local aa,ab,ac=a(38)local ad retur
 ]:string}}export type WindowConfiguration={autoSave:boolean?,autoLoad:boolean?,fileName:string?,customFolder:string?}
 export type WindowProps={name:string?,subtitle:string?,theme:Theme?,icon:(string|number)?,showName:string?,showIcon:(
 string|number)?,showIconOnly:boolean?,sidebarLayout:boolean?,profile:string?,BlurBackground:boolean?,CapsuleAnimation:boolean?,IconTabAnimation:boolean?,configuration:WindowConfiguration?,
-fallbackFont:(Font|Enum.Font)?,SideBarWidth:(number|string)?,locale:string?,translations:Translations?,translator:Translator?,ThemeAnimation:any?,TransitionTime:number?,ShinyEffect:boolean?,AutoExecute:(boolean|string)?,AfkSystem:boolean?,AutoRejoin:boolean?,UnloadKeybind:Enum.KeyCode?}export type TabProps={
+fallbackFont:(Font|Enum.Font)?,SideBarWidth:(number|string)?,locale:string?,translations:Translations?,translator:Translator?,ThemeAnimation:any?,TransitionTime:number?,ShinyEffect:boolean?,AutoExecute:(boolean|string)?,AfkSystem:boolean?,AutoRejoin:boolean?}export type TabProps={
 name:string?,icon:(string|number)?}export type TagProps={text:string?,title:string?,icon:(string|number)?,color:Color3?,
 order:number?}export type SectionProps={name:string?,icon:(string|number)?}export type TextProps={name:string?,text:string?,icon:(string|number)?,instances:{any}?}export type DividerProps={text:string?,spacing:number?,line:boolean?}export type
 GroupProps={direction:string?}export type ButtonProps={name:string?,description:string?,icon:(string|number)?,callback:(
