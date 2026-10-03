@@ -1937,14 +1937,22 @@ if I.MainPreset==true then
 end
 function h.CreatePerformanceMonitor(I)
  if I.performanceMonitor then I.performanceMonitor:Destroy()end
- local o=I:Create('Frame',{Name='PerformanceMonitor',Size=UDim2.fromOffset(490,46),Position=UDim2.new(0,14,0,14),BackgroundColor3=Color3.fromRGB(12,12,12),BorderSizePixel=0,ZIndex=220,Parent=I.screenGui})
- I:Create('UICorner',{CornerRadius=UDim.new(0,8),Parent=o})
- local stroke=I:Create('UIStroke',{Thickness=2,Color=Color3.fromRGB(0,0,0),Parent=o})
- local glow=I:CreateGlow(o,Color3.fromRGB(255,255,255),20,1)
- local icon=I:Create('ImageLabel',{Image=I.icon or'',Size=UDim2.fromOffset(28,28),Position=UDim2.new(0,8,0.5,0),AnchorPoint=Vector2.new(0,0.5),BackgroundTransparency=1,ZIndex=221,Parent=o})
- local label=I:Create('TextLabel',{Text='',Size=UDim2.new(1,-52,1,0),Position=UDim2.new(0,48,0,0),BackgroundTransparency=1,TextSize=18,TextColor3=Color3.fromRGB(255,255,255),TextXAlignment=Enum.TextXAlignment.Left,TextYAlignment=Enum.TextYAlignment.Center,ZIndex=221,Parent=o})
- local hit=I:Create('TextButton',{BackgroundTransparency=1,Size=UDim2.fromScale(1,1),Text='',TextTransparency=1,ZIndex=222,Parent=o})
- local monitor={main=o,hit=hit,expanded=true,dragging=false,moved=false,connections={}}
+ local title=tostring(I.showName or I.name or'Rayfield')
+ local main=I:Create('Frame',{Name='PerformanceMonitor',Size=UDim2.fromOffset(185,50),Position=UDim2.new(0,14,0,14),BackgroundColor3=Color3.fromRGB(12,12,12),BorderSizePixel=0,ZIndex=220,Parent=I.screenGui})
+ I:Create('UICorner',{Parent=main},{CornerRadius='PillCornerRadius'})
+ local stroke=I:Create('UIStroke',{Color=Color3.fromRGB(0,0,0),Thickness=2,Parent=main})
+ local icon=I:Create('ImageLabel',{Name='CollapsedIcon',Image=I.icon or I.showIcon,AnchorPoint=Vector2.new(0,0.5),Position=UDim2.new(0,16,0.5,0),Size=UDim2.fromOffset(24,24),BackgroundTransparency=1,ZIndex=221,Parent=main},{ImageColor3='TitlingColor'})
+ I:Create('UICorner',{Parent=icon},{CornerRadius='PillCornerRadius'})
+ local text=I:Create('Frame',{Name='CollapsedText',AnchorPoint=Vector2.new(0,0.5),Position=UDim2.new(0,50,0.5,0),Size=UDim2.new(1,-60,0,32),BackgroundTransparency=1,ZIndex=221,Parent=main})
+ I:Create('UIListLayout',{Padding=UDim.new(0,1),VerticalAlignment=Enum.VerticalAlignment.Center,SortOrder=Enum.SortOrder.LayoutOrder,Parent=text})
+ local heading=I:Create('TextLabel',{Name='Title',Text=title,Size=UDim2.new(1,0,0,16),BackgroundTransparency=1,RichText=true,TextSize=16,TextWrapped=true,TextXAlignment=Enum.TextXAlignment.Left,LayoutOrder=1,ZIndex=221,Parent=text},{TextColor3='TitlingColor',FontFace='Font'})
+ local stats=I:Create('TextLabel',{Name='Subtitle',Text='0 fps | 0 ms',Size=UDim2.new(1,0,0,14),BackgroundTransparency=1,TextSize=14,TextXAlignment=Enum.TextXAlignment.Left,LayoutOrder=2,ZIndex=221,Parent=text},{TextColor3='TitlingColor',FontFace='Font'})
+ local hit=I:Create('TextButton',{Name='MonitorInteract',BackgroundTransparency=1,Size=UDim2.fromScale(1,1),Text='',TextTransparency=1,ZIndex=222,Parent=main})
+ local monitor={main=main,hit=hit,expanded=false,dragging=false,moved=false,connections={},baseSize=UDim2.fromOffset(185,50)}
+ monitor.glow=I:CreateGlow(main,Color3.fromRGB(255,255,255),22,1)
+ monitor.scale=I:Create('UIScale',{Scale=1,Parent=main})
+ local userInput=f.userInputService
+ local function update(fps,ms)stats.Text=tostring(fps)..' fps | '..tostring(ms)..' ms'end
  local function ping()
   local ok,item=pcall(function()return game:GetService('Stats').Network.ServerStatsItem['Data Ping']end)
   if not ok or not item then return 0 end
@@ -1952,43 +1960,38 @@ function h.CreatePerformanceMonitor(I)
   if okValue and type(value)=='string'then return tonumber(string.match(value,'%d+%.?%d*'))or 0 end
   return 0
  end
- local function update(fps,ms)label.Text=tostring(I.name or'Rayfield')..'  |  '..tostring(fps)..' fps  |  '..tostring(ms)..' ms'end
- local function setExpanded(value)
+ local function setWide(value)
   monitor.expanded=value
-  icon.Visible=value
-  label.Visible=value
-  if not value then label.Text='...'end
-  o.Size=value and UDim2.fromOffset(490,46)or UDim2.fromOffset(42,42)
-  stroke.Transparency=value and I.theme.ElementStrokeTransparency or 1
-  glow.Transparency=value and 0.75 or 1
+  main.Size=value and UDim2.fromOffset(490,50)or monitor.baseSize
+  main.BackgroundTransparency=value and I.theme.ElementTransparency or I.theme.ElementTransparency
+  heading.Text=value and title..' | performance' or title
+  stats.TextXAlignment=value and Enum.TextXAlignment.Left or Enum.TextXAlignment.Left
+  if value then text.Size=UDim2.new(1,-60,0,32)else text.Size=UDim2.new(1,-60,0,32)end
  end
  function monitor:Destroy()
   for _,connection in ipairs(self.connections)do pcall(function()connection:Disconnect()end)end
-  pcall(function()o:Destroy()end)
+  pcall(function()main:Destroy()end)
   if I.performanceMonitor==self then I.performanceMonitor=nil end
  end
- local input=f.userInputService
- local run=f.runService
  local function add(connection)table.insert(monitor.connections,connection)end
  add(I:ConnectFor(monitor,hit.InputBegan,function(inputObject,processed)
   if processed then return end
   local kind=inputObject.UserInputType.Name
   if kind~='MouseButton1'and kind~='Touch'then return end
-  monitor.dragging=true monitor.moved=false monitor.start=input:GetMouseLocation()
-  monitor.offset=o.AbsolutePosition-monitor.start
-  if I.capsuleAnimation then f.tweenService:Create(o,TweenInfo.new(0.2,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Size=UDim2.fromOffset(502,46)}):Play()f.tweenService:Create(glow,TweenInfo.new(0.18,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Transparency=0.25}):Play()end
+  monitor.dragging=true monitor.moved=false monitor.start=userInput:GetMouseLocation()monitor.offset=main.AbsolutePosition+main.AbsoluteSize*main.AnchorPoint-monitor.start
+  if I.capsuleAnimation then f.tweenService:Create(main,TweenInfo.new(0.2,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Size=UDim2.fromOffset((monitor.expanded and 490 or 185)+12,50)}):Play()f.tweenService:Create(monitor.scale,TweenInfo.new(0.2,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Scale=1.06}):Play()f.tweenService:Create(monitor.glow,TweenInfo.new(0.18,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Transparency=0.25}):Play()end
  end))
- add(I:Connect(input.InputEnded,function(inputObject)
+ add(I:Connect(userInput.InputEnded,function(inputObject)
   local kind=inputObject.UserInputType.Name
   if kind~='MouseButton1'and kind~='Touch'then return end
   if not monitor.dragging then return end
   monitor.dragging=false
-  if I.capsuleAnimation then f.tweenService:Create(o,TweenInfo.new(0.28,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Size=monitor.expanded and UDim2.fromOffset(490,46)or UDim2.fromOffset(42,42)}):Play()f.tweenService:Create(glow,TweenInfo.new(0.25,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Transparency=monitor.expanded and 0.75 or 1}):Play()end
-  if not monitor.moved then setExpanded(not monitor.expanded)end
+  if I.capsuleAnimation then f.tweenService:Create(main,TweenInfo.new(0.28,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Size=monitor.expanded and UDim2.fromOffset(490,50)or monitor.baseSize}):Play()f.tweenService:Create(monitor.scale,TweenInfo.new(0.28,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Scale=1}):Play()f.tweenService:Create(monitor.glow,TweenInfo.new(0.25,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Transparency=1}):Play()end
+  if not monitor.moved then setWide(not monitor.expanded)end
  end))
- add(I:Connect(run.RenderStepped,function(delta)
-  if monitor.dragging then local mouse=input:GetMouseLocation()if not monitor.moved and(mouse-monitor.start).Magnitude>=4 then monitor.moved=true end if monitor.moved then local inset=if I.screenGui.IgnoreGuiInset then f.guiService:GetGuiInset()else Vector2.zero local position=mouse+monitor.offset+inset o.Position=UDim2.fromOffset(position.X,position.Y)end end
-  monitor.clock=(monitor.clock or 0)+delta monitor.frames=(monitor.frames or 0)+1 if monitor.clock<0.5 or not monitor.expanded then return end update(math.floor(monitor.frames/monitor.clock+0.5),math.floor(ping()+0.5))monitor.clock=0 monitor.frames=0
+ add(I:Connect(f.runService.RenderStepped,function(delta)
+  if monitor.dragging then local mouse=userInput:GetMouseLocation()if not monitor.moved and(mouse-monitor.start).Magnitude<4 then else monitor.moved=true local inset=if I.screenGui.IgnoreGuiInset then f.guiService:GetGuiInset()else Vector2.zero local position=mouse+monitor.offset+inset main.Position=UDim2.fromOffset(position.X,position.Y)end end
+  monitor.clock=(monitor.clock or 0)+delta monitor.frames=(monitor.frames or 0)+1 if monitor.clock<0.5 then return end update(math.floor(monitor.frames/monitor.clock+0.5),math.floor(ping()+0.5))monitor.clock=0 monitor.frames=0
  end))
  update(0,0)I.performanceMonitor=monitor return monitor
 end
