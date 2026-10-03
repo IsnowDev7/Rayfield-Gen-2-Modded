@@ -1936,79 +1936,103 @@ if I.MainPreset==true then
  info:Select(true)
 end
 function h.CreatePerformanceMonitor(I)
- if I.performanceMonitor then I.performanceMonitor:Destroy()end
+ if I.performanceMonitor then pcall(function()I.performanceMonitor:Destroy()end)end
  local UIS=game:GetService('UserInputService')
  local RunService=game:GetService('RunService')
  local StatsService=game:GetService('Stats')
- local TweenService=game:GetService('TweenService')
- local monitor={window=I,expanded=true,dragging=false,moved=false,connections={}}
- local function new(class,props)
-  local object=Instance.new(class)
-  for property,value in props do pcall(function()object[property]=value end)end
-  object.Parent=props.Parent
-  table.insert(I.instances,object)
-  return object
- end
- local function image(value)
-  if type(value)=='string' then return value end
-  return''
+ local monitor={expanded=true,dragging=false,moved=false,connections={}}
+ local frame=Instance.new('Frame')
+ frame.Name='PerformanceMonitor'
+ frame.Size=UDim2.fromOffset(490,46)
+ frame.Position=UDim2.new(0,14,0,14)
+ frame.BackgroundColor3=Color3.fromRGB(12,12,12)
+ frame.BorderSizePixel=0
+ frame.ZIndex=220
+ frame.Parent=I.screenGui
+ local corner=Instance.new('UICorner')
+ corner.CornerRadius=UDim.new(0,8)
+ corner.Parent=frame
+ local stroke=Instance.new('UIStroke')
+ stroke.Thickness=2
+ stroke.Color=Color3.fromRGB(0,0,0)
+ stroke.Parent=frame
+ local label=Instance.new('TextLabel')
+ label.Size=UDim2.fromScale(1,1)
+ label.BackgroundTransparency=1
+ label.TextColor3=Color3.fromRGB(255,255,255)
+ label.TextSize=18
+ label.TextXAlignment=Enum.TextXAlignment.Center
+ label.TextYAlignment=Enum.TextYAlignment.Center
+ label.ZIndex=221
+ label.Parent=frame
+ local button=Instance.new('TextButton')
+ button.Size=UDim2.fromScale(1,1)
+ button.BackgroundTransparency=1
+ button.Text=''
+ button.TextTransparency=1
+ button.ZIndex=222
+ button.Parent=frame
+ table.insert(I.instances,frame)
+ table.insert(I.instances,corner)
+ table.insert(I.instances,stroke)
+ table.insert(I.instances,label)
+ table.insert(I.instances,button)
+ local function add(connection)
+  table.insert(monitor.connections,connection)
+  table.insert(I.connections,connection)
  end
  local function ping()
   local ok,item=pcall(function()return StatsService.Network.ServerStatsItem['Data Ping']end)
   if not ok or not item then return 0 end
   local okValue,value=pcall(function()return item:GetValueString()end)
-  if okValue and type(value)=='string'then local number=tonumber(string.match(value,'%d+%.?%d*'))if number then return math.floor(number+0.5)end end
+  if okValue and type(value)=='string'then return tonumber(string.match(value,'%d+%.?%d*'))or 0 end
   return 0
  end
- local function connect(signal,callback)
-  local connection=signal:Connect(callback)
-  table.insert(monitor.connections,connection)
-  table.insert(I.connections,connection)
-  return connection
- end
- local expanded=UDim2.fromOffset(490,46)
- local collapsed=UDim2.fromOffset(42,42)
- monitor.main=new('Frame',{Name='PerformanceMonitor',Size=expanded,Position=UDim2.new(0,14,0,14),BorderSizePixel=0,BackgroundColor3=Color3.fromRGB(12,12,12),ZIndex=220,Parent=I.screenGui})
- new('UICorner',{CornerRadius=UDim.new(0,8),Parent=monitor.main})
- new('UIStroke',{Thickness=2,Color=Color3.fromRGB(0,0,0),Parent=monitor.main})
- monitor.circle=new('Frame',{Size=UDim2.fromOffset(30,30),Position=UDim2.new(0,8,0.5,0),AnchorPoint=Vector2.new(0,0.5),BackgroundColor3=Color3.fromRGB(28,28,28),BorderSizePixel=0,ZIndex=221,Parent=monitor.main})
- new('UICorner',{CornerRadius=UDim.new(1,0),Parent=monitor.circle})
- new('ImageLabel',{Image=image(I.icon),Size=UDim2.fromOffset(20,20),Position=UDim2.fromScale(0.5,0.5),AnchorPoint=Vector2.new(0.5,0.5),BackgroundTransparency=1,ZIndex=222,Parent=monitor.circle})
- new('TextLabel',{Text=tostring(I.name or'Rayfield'),Size=UDim2.new(0,150,1,0),Position=UDim2.new(0,48,0,0),BackgroundTransparency=1,TextSize=18,TextColor3=Color3.fromRGB(255,255,255),TextXAlignment=Enum.TextXAlignment.Left,TextYAlignment=Enum.TextYAlignment.Center,ZIndex=222,Parent=monitor.main})
- monitor.fps=new('TextLabel',{Text='• 0 fps',Size=UDim2.fromOffset(100,1),Position=UDim2.new(0,204,0.5,0),AnchorPoint=Vector2.new(0,0.5),BackgroundTransparency=1,TextSize=18,TextColor3=Color3.fromRGB(96,165,250),ZIndex=222,Parent=monitor.main})
- monitor.ms=new('TextLabel',{Text='• 0 ms',Size=UDim2.fromOffset(100,1),Position=UDim2.new(0,318,0.5,0),AnchorPoint=Vector2.new(0,0.5),BackgroundTransparency=1,TextSize=18,TextColor3=Color3.fromRGB(52,211,153),ZIndex=222,Parent=monitor.main})
- monitor.ellipsis=new('TextLabel',{Text='...',Size=UDim2.fromScale(1,1),BackgroundTransparency=1,TextSize=22,TextColor3=Color3.fromRGB(255,255,255),TextXAlignment=Enum.TextXAlignment.Center,TextYAlignment=Enum.TextYAlignment.Center,Visible=false,ZIndex=222,Parent=monitor.main})
- monitor.hit=new('TextButton',{Size=UDim2.fromScale(1,1),BackgroundTransparency=1,Text='',TextTransparency=1,AutoButtonColor=false,ZIndex=223,Parent=monitor.main})
- local function show(value)
-  monitor.expanded=value monitor.circle.Visible=value monitor.fps.Visible=value monitor.ms.Visible=value monitor.ellipsis.Visible=not value
-  TweenService:Create(monitor.main,TweenInfo.new(0.2,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Size=value and expanded or collapsed}):Play()
+ local function update(fps,ms)
+  label.Text=tostring(I.name or'Rayfield')..'  |  '..tostring(fps)..' fps  |  '..tostring(ms)..' ms'
  end
  function monitor:Destroy()
   for _,connection in ipairs(self.connections)do pcall(function()connection:Disconnect()end)end
-  if self.main then self.main:Destroy()end
-  if I.performanceMonitor==self then I.performanceMonitor=nil end
+  pcall(function()frame:Destroy()end)
  end
- connect(monitor.hit.InputBegan,function(input,processed)
+ add(button.InputBegan:Connect(function(input,processed)
   if processed then return end
-  local kind=input.UserInputType.Name if kind~='MouseButton1'and kind~='Touch'then return end
-  monitor.dragging=true monitor.moved=false monitor.anchor=monitor.main.AbsolutePosition+monitor.main.AbsoluteSize*monitor.main.AnchorPoint-UIS:GetMouseLocation()
- end)
- connect(UIS.InputChanged,function(input)
+  local kind=input.UserInputType.Name
+  if kind~='MouseButton1'and kind~='Touch'then return end
+  monitor.dragging=true
+  monitor.moved=false
+  monitor.anchor=frame.AbsolutePosition-UIS:GetMouseLocation()
+ end))
+ add(UIS.InputChanged:Connect(function(input)
   if not monitor.dragging then return end
-  local kind=input.UserInputType.Name if kind~='MouseMovement'and kind~='Touch'then return end
-  monitor.moved=true local mouse=UIS:GetMouseLocation()monitor.main.Position=UDim2.fromOffset(math.max(4,mouse.X+monitor.anchor.X),math.max(4,mouse.Y+monitor.anchor.Y))
- end)
- connect(UIS.InputEnded,function(input)
-  local kind=input.UserInputType.Name if kind~='MouseButton1'and kind~='Touch'then return end
-  if not monitor.dragging then return end monitor.dragging=false if not monitor.moved then show(not monitor.expanded)end
- end)
+  local kind=input.UserInputType.Name
+  if kind~='MouseMovement'and kind~='Touch'then return end
+  monitor.moved=true
+  local mouse=UIS:GetMouseLocation()
+  frame.Position=UDim2.fromOffset(math.max(4,mouse.X+monitor.anchor.X),math.max(4,mouse.Y+monitor.anchor.Y))
+ end))
+ add(UIS.InputEnded:Connect(function(input)
+  local kind=input.UserInputType.Name
+  if kind~='MouseButton1'and kind~='Touch'then return end
+  if not monitor.dragging then return end
+  monitor.dragging=false
+  if not monitor.moved then
+   monitor.expanded=not monitor.expanded
+   frame.Size=monitor.expanded and UDim2.fromOffset(490,46)or UDim2.fromOffset(42,42)
+   label.Text=monitor.expanded and label.Text or '...'
+  end
+ end))
  local frames,elapsed=0,0
- connect(RunService.RenderStepped,function(delta)
-  frames+=1 elapsed+=delta if elapsed<0.5 then return end
-  monitor.fps.Text='• '..tostring(math.floor(frames/elapsed+0.5))..' fps'
-  monitor.ms.Text='• '..tostring(ping())..' ms'
-  frames=0 elapsed=0
- end)
+ add(RunService.RenderStepped:Connect(function(delta)
+  if not monitor.expanded then return end
+  frames+=1
+  elapsed+=delta
+  if elapsed<0.5 then return end
+  update(math.floor(frames/elapsed+0.5),math.floor(ping()+0.5))
+  frames=0
+  elapsed=0
+ end))
+ update(0,0)
  I.performanceMonitor=monitor
  return monitor
 end
