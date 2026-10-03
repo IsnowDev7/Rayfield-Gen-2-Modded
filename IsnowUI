@@ -1942,63 +1942,75 @@ function h.CreatePerformanceMonitor(I)
  local StatsService=game:GetService('Stats')
  local TweenService=game:GetService('TweenService')
  local monitor={window=I,expanded=true,dragging=false,moved=false,connections={}}
- local expandedSize=UDim2.fromOffset(490,46)
- local collapsedSize=UDim2.fromOffset(42,42)
+ local function new(class,props)
+  local object=Instance.new(class)
+  for property,value in props do pcall(function()object[property]=value end)end
+  object.Parent=props.Parent
+  table.insert(I.instances,object)
+  return object
+ end
  local function image(value)
-  local resolver=af and af.resolve
-  if type(resolver)=='function'then local ok,result=pcall(resolver,af,value)if ok and type(result)=='string'then return result end end
+  if type(value)=='string' then return value end
   return''
  end
- local function getPing()
+ local function ping()
   local ok,item=pcall(function()return StatsService.Network.ServerStatsItem['Data Ping']end)
   if not ok or not item then return 0 end
   local okValue,value=pcall(function()return item:GetValueString()end)
   if okValue and type(value)=='string'then local number=tonumber(string.match(value,'%d+%.?%d*'))if number then return math.floor(number+0.5)end end
   return 0
  end
- local function setText()
-  if monitor.fpsText then monitor.fpsText.Text=tostring(monitor.fps or 0)..' fps'end
-  if monitor.msText then monitor.msText.Text=tostring(monitor.ms or 0)..' ms'end
+ local function connect(signal,callback)
+  local connection=signal:Connect(callback)
+  table.insert(monitor.connections,connection)
+  table.insert(I.connections,connection)
+  return connection
  end
- monitor.main=I:Create('Frame',{Name='PerformanceMonitor',Size=expandedSize,Position=UDim2.new(0,14,0,14),BorderSizePixel=0,BackgroundColor3=Color3.fromRGB(12,12,12),ZIndex=220,Parent=I.screenGui})
- I:Create('UICorner',{CornerRadius=UDim.new(0,8),Parent=monitor.main})
- I:Create('UIStroke',{Thickness=2,Color=Color3.fromRGB(0,0,0),Parent=monitor.main})
- monitor.iconCircle=I:Create('Frame',{Size=UDim2.fromOffset(30,30),Position=UDim2.new(0,8,0.5,0),AnchorPoint=Vector2.new(0,0.5),BackgroundColor3=Color3.fromRGB(28,28,28),BorderSizePixel=0,ZIndex=221,Parent=monitor.main})
- I:Create('UICorner',{CornerRadius=UDim.new(1,0),Parent=monitor.iconCircle})
- I:Create('ImageLabel',{Image=I.icon or'',Size=UDim2.fromOffset(20,20),Position=UDim2.fromScale(0.5,0.5),AnchorPoint=Vector2.new(0.5,0.5),BackgroundTransparency=1,ZIndex=222,Parent=monitor.iconCircle})
- monitor.titleText=I:Create('TextLabel',{Text=tostring(I.name or'Rayfield'),Size=UDim2.new(0,150,1,0),Position=UDim2.new(0,48,0,0),BackgroundTransparency=1,RichText=true,TextSize=18,TextColor3=Color3.fromRGB(255,255,255),TextXAlignment=Enum.TextXAlignment.Left,TextYAlignment=Enum.TextYAlignment.Center,ZIndex=222,Parent=monitor.main})
- monitor.separator=I:Create('TextLabel',{Text='|',Size=UDim2.fromOffset(12,1),Position=UDim2.new(0,204,0.5,0),AnchorPoint=Vector2.new(0,0.5),BackgroundTransparency=1,TextSize=18,TextColor3=Color3.fromRGB(255,255,255),ZIndex=222,Parent=monitor.main})
- monitor.fpsIcon=I:Create('ImageLabel',{Image=image('lucide:activity'),Size=UDim2.fromOffset(16,16),Position=UDim2.new(0,224,0.5,0),AnchorPoint=Vector2.new(0,0.5),BackgroundTransparency=1,ImageColor3=Color3.fromRGB(96,165,250),ZIndex=222,Parent=monitor.main})
- monitor.fpsText=I:Create('TextLabel',{Text='0 fps',Size=UDim2.fromOffset(70,1),Position=UDim2.new(0,244,0.5,0),AnchorPoint=Vector2.new(0,0.5),BackgroundTransparency=1,TextSize=18,TextColor3=Color3.fromRGB(96,165,250),ZIndex=222,Parent=monitor.main})
- monitor.msIcon=I:Create('ImageLabel',{Image=image('lucide:wifi'),Size=UDim2.fromOffset(16,16),Position=UDim2.new(0,328,0.5,0),AnchorPoint=Vector2.new(0,0.5),BackgroundTransparency=1,ImageColor3=Color3.fromRGB(52,211,153),ZIndex=222,Parent=monitor.main})
- monitor.msText=I:Create('TextLabel',{Text='0 ms',Size=UDim2.fromOffset(70,1),Position=UDim2.new(0,348,0.5,0),AnchorPoint=Vector2.new(0,0.5),BackgroundTransparency=1,TextSize=18,TextColor3=Color3.fromRGB(52,211,153),ZIndex=222,Parent=monitor.main})
- monitor.collapsedIcon=I:Create('ImageLabel',{Image=image('lucide:ellipsis'),Size=UDim2.fromOffset(22,22),Position=UDim2.fromScale(0.5,0.5),AnchorPoint=Vector2.new(0.5,0.5),BackgroundTransparency=1,Visible=false,ZIndex=222,Parent=monitor.main})
- monitor.hit=I:Create('TextButton',{Size=UDim2.fromScale(1,1),BackgroundTransparency=1,Text='',TextTransparency=1,AutoButtonColor=false,ZIndex=223,Parent=monitor.main})
- local function setExpanded(value)
-  monitor.expanded=value monitor.iconCircle.Visible=value monitor.titleText.Visible=value monitor.separator.Visible=value monitor.fpsIcon.Visible=value monitor.fpsText.Visible=value monitor.msIcon.Visible=value monitor.msText.Visible=value monitor.collapsedIcon.Visible=not value
-  TweenService:Create(monitor.main,TweenInfo.new(0.22,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Size=value and expandedSize or collapsedSize}):Play()
+ local expanded=UDim2.fromOffset(490,46)
+ local collapsed=UDim2.fromOffset(42,42)
+ monitor.main=new('Frame',{Name='PerformanceMonitor',Size=expanded,Position=UDim2.new(0,14,0,14),BorderSizePixel=0,BackgroundColor3=Color3.fromRGB(12,12,12),ZIndex=220,Parent=I.screenGui})
+ new('UICorner',{CornerRadius=UDim.new(0,8),Parent=monitor.main})
+ new('UIStroke',{Thickness=2,Color=Color3.fromRGB(0,0,0),Parent=monitor.main})
+ monitor.circle=new('Frame',{Size=UDim2.fromOffset(30,30),Position=UDim2.new(0,8,0.5,0),AnchorPoint=Vector2.new(0,0.5),BackgroundColor3=Color3.fromRGB(28,28,28),BorderSizePixel=0,ZIndex=221,Parent=monitor.main})
+ new('UICorner',{CornerRadius=UDim.new(1,0),Parent=monitor.circle})
+ new('ImageLabel',{Image=image(I.icon),Size=UDim2.fromOffset(20,20),Position=UDim2.fromScale(0.5,0.5),AnchorPoint=Vector2.new(0.5,0.5),BackgroundTransparency=1,ZIndex=222,Parent=monitor.circle})
+ new('TextLabel',{Text=tostring(I.name or'Rayfield'),Size=UDim2.new(0,150,1,0),Position=UDim2.new(0,48,0,0),BackgroundTransparency=1,TextSize=18,TextColor3=Color3.fromRGB(255,255,255),TextXAlignment=Enum.TextXAlignment.Left,TextYAlignment=Enum.TextYAlignment.Center,ZIndex=222,Parent=monitor.main})
+ monitor.fps=new('TextLabel',{Text='• 0 fps',Size=UDim2.fromOffset(100,1),Position=UDim2.new(0,204,0.5,0),AnchorPoint=Vector2.new(0,0.5),BackgroundTransparency=1,TextSize=18,TextColor3=Color3.fromRGB(96,165,250),ZIndex=222,Parent=monitor.main})
+ monitor.ms=new('TextLabel',{Text='• 0 ms',Size=UDim2.fromOffset(100,1),Position=UDim2.new(0,318,0.5,0),AnchorPoint=Vector2.new(0,0.5),BackgroundTransparency=1,TextSize=18,TextColor3=Color3.fromRGB(52,211,153),ZIndex=222,Parent=monitor.main})
+ monitor.ellipsis=new('TextLabel',{Text='...',Size=UDim2.fromScale(1,1),BackgroundTransparency=1,TextSize=22,TextColor3=Color3.fromRGB(255,255,255),TextXAlignment=Enum.TextXAlignment.Center,TextYAlignment=Enum.TextYAlignment.Center,Visible=false,ZIndex=222,Parent=monitor.main})
+ monitor.hit=new('TextButton',{Size=UDim2.fromScale(1,1),BackgroundTransparency=1,Text='',TextTransparency=1,AutoButtonColor=false,ZIndex=223,Parent=monitor.main})
+ local function show(value)
+  monitor.expanded=value monitor.circle.Visible=value monitor.fps.Visible=value monitor.ms.Visible=value monitor.ellipsis.Visible=not value
+  TweenService:Create(monitor.main,TweenInfo.new(0.2,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Size=value and expanded or collapsed}):Play()
  end
- function monitor:Destroy()for _,connection in ipairs(self.connections)do pcall(function()connection:Disconnect()end)end if self.main then self.main:Destroy()end if I.performanceMonitor==self then I.performanceMonitor=nil end end
- table.insert(monitor.connections,I:Connect(monitor.hit.InputBegan,function(input,processed)
+ function monitor:Destroy()
+  for _,connection in ipairs(self.connections)do pcall(function()connection:Disconnect()end)end
+  if self.main then self.main:Destroy()end
+  if I.performanceMonitor==self then I.performanceMonitor=nil end
+ end
+ connect(monitor.hit.InputBegan,function(input,processed)
   if processed then return end
   local kind=input.UserInputType.Name if kind~='MouseButton1'and kind~='Touch'then return end
   monitor.dragging=true monitor.moved=false monitor.anchor=monitor.main.AbsolutePosition+monitor.main.AbsoluteSize*monitor.main.AnchorPoint-UIS:GetMouseLocation()
- end))
- table.insert(monitor.connections,I:Connect(UIS.InputChanged,function(input)
+ end)
+ connect(UIS.InputChanged,function(input)
   if not monitor.dragging then return end
   local kind=input.UserInputType.Name if kind~='MouseMovement'and kind~='Touch'then return end
   monitor.moved=true local mouse=UIS:GetMouseLocation()monitor.main.Position=UDim2.fromOffset(math.max(4,mouse.X+monitor.anchor.X),math.max(4,mouse.Y+monitor.anchor.Y))
- end))
- table.insert(monitor.connections,I:Connect(UIS.InputEnded,function(input)
+ end)
+ connect(UIS.InputEnded,function(input)
   local kind=input.UserInputType.Name if kind~='MouseButton1'and kind~='Touch'then return end
-  if not monitor.dragging then return end monitor.dragging=false if not monitor.moved then setExpanded(not monitor.expanded)end
- end))
+  if not monitor.dragging then return end monitor.dragging=false if not monitor.moved then show(not monitor.expanded)end
+ end)
  local frames,elapsed=0,0
- table.insert(monitor.connections,I:Connect(RunService.RenderStepped,function(delta)
+ connect(RunService.RenderStepped,function(delta)
   frames+=1 elapsed+=delta if elapsed<0.5 then return end
-  monitor.fps=math.floor(frames/elapsed+0.5)frames=0 elapsed=0 monitor.ms=getPing()setText()
- end))
- I.performanceMonitor=monitor setText()return monitor
+  monitor.fps.Text='• '..tostring(math.floor(frames/elapsed+0.5))..' fps'
+  monitor.ms.Text='• '..tostring(ping())..' ms'
+  frames=0 elapsed=0
+ end)
+ I.performanceMonitor=monitor
+ return monitor
 end
 if I.PerformanceMonitor or I.performanceMonitor or I.FPSMonitor then L:CreatePerformanceMonitor(I.PerformanceMonitor or I.performanceMonitor or I.FPSMonitor)end return L end function h._syncShinyEffect(I)if not I.shinyEffect or not I.shinyGradient then return end if I._shinyAnimating then return end I._shinyAnimating=true I._shinyGeneration=(I._shinyGeneration or 0)+1 local J=I._shinyGeneration task.spawn(function()while I._shinyGeneration==J and not I.unloaded do I.shinyGradient.Offset=Vector2.new(0,-1.5)local K=f.tweenService:Create(I.shinyGradient,TweenInfo.new(2.8,Enum.EasingStyle.Quint,Enum.EasingDirection.InOut),{Offset=Vector2.new(0,1.5)})I._shinyTween=K K:Play()K.Completed:Wait()task.wait(0.7)end I._shinyAnimating=false I._shinyTween=nil end)end function
 h._syncLiveAnimation(I)if not I.theme.LiveAnimation then I._liveAnimating=false return end if I._liveAnimating then
