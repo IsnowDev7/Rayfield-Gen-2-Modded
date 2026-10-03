@@ -1889,13 +1889,14 @@ if I.MainPreset==true then
   return frame
  end
  local function button(parent,text,icon,x,y,w,callback)
-  local b=L:Create('TextButton',{Text=text,AutoButtonColor=false,BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.fromOffset(w,34),Position=UDim2.fromOffset(x,y),Parent=parent},{BackgroundColor3='NeutralButton',TextColor3='ContentColor',FontFace='Font'})
+  local b=L:Create('TextButton',{Text='',AutoButtonColor=false,BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.fromOffset(w,34),Position=UDim2.fromOffset(x,y),ClipsDescendants=true,Parent=parent},{BackgroundColor3='NeutralButton',TextColor3='ContentColor',FontFace='Font'})
   L:Create('UICorner',{CornerRadius=UDim.new(0,8),Parent=b})
+  local left=icon and 40 or 12
+  local right=icon and 52 or 24
   if icon then
-   local img=L:Create('ImageLabel',{Image=af.resolve(icon),Size=UDim2.fromOffset(16,16),Position=UDim2.fromOffset(10,9),BackgroundTransparency=1,Parent=b},{ImageColor3='ContentColor'})
-   b.TextXAlignment=Enum.TextXAlignment.Left
-   b.Text='   '..text
+   L:Create('ImageLabel',{Image=af.resolve(icon),Size=UDim2.fromOffset(18,18),Position=UDim2.fromOffset(12,8),BackgroundTransparency=1,BorderSizePixel=0,ScaleType=Enum.ScaleType.Fit,Parent=b},{ImageColor3='ContentColor'})
   end
+  L:Create('TextLabel',{Text=text,Size=UDim2.new(1,-right,1,0),Position=UDim2.fromOffset(left,0),BackgroundTransparency=1,BorderSizePixel=0,TextSize=13,TextXAlignment=Enum.TextXAlignment.Left,TextYAlignment=Enum.TextYAlignment.Center,TextWrapped=false,TextTruncate=Enum.TextTruncate.AtEnd,Parent=b},{TextColor3='ContentColor',FontFace='Font'})
   L:Connect(b.MouseButton1Click,function()pcall(callback)end)
   return b
  end
