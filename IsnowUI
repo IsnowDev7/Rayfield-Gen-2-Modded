@@ -1935,67 +1935,7 @@ if I.MainPreset==true then
  profile.LayoutOrder=1 gamePanel.LayoutOrder=2
  info:Select(true)
 end
-function h.CreatePerformanceMonitor(I)
- if I.performanceMonitor then I.performanceMonitor:Destroy()end
- local title=tostring(I.showName or I.name or'Rayfield')
- local main=I:Create('Frame',{Name='PerformanceMonitor',Size=UDim2.fromOffset(185,50),Position=UDim2.new(0,14,0,14),BackgroundColor3=Color3.fromRGB(12,12,12),BorderSizePixel=0,ZIndex=220,Parent=I.screenGui})
- I:Create('UICorner',{Parent=main},{CornerRadius='PillCornerRadius'})
- local stroke=I:Create('UIStroke',{Color=Color3.fromRGB(0,0,0),Thickness=2,Parent=main})
- local icon=I:Create('ImageLabel',{Name='CollapsedIcon',Image=I.icon or I.showIcon,AnchorPoint=Vector2.new(0,0.5),Position=UDim2.new(0,16,0.5,0),Size=UDim2.fromOffset(24,24),BackgroundTransparency=1,ZIndex=221,Parent=main},{ImageColor3='TitlingColor'})
- I:Create('UICorner',{Parent=icon},{CornerRadius='PillCornerRadius'})
- local text=I:Create('Frame',{Name='CollapsedText',AnchorPoint=Vector2.new(0,0.5),Position=UDim2.new(0,50,0.5,0),Size=UDim2.new(1,-60,0,32),BackgroundTransparency=1,ZIndex=221,Parent=main})
- I:Create('UIListLayout',{Padding=UDim.new(0,1),VerticalAlignment=Enum.VerticalAlignment.Center,SortOrder=Enum.SortOrder.LayoutOrder,Parent=text})
- local heading=I:Create('TextLabel',{Name='Title',Text=title,Size=UDim2.new(1,0,0,16),BackgroundTransparency=1,RichText=true,TextSize=16,TextWrapped=true,TextXAlignment=Enum.TextXAlignment.Left,LayoutOrder=1,ZIndex=221,Parent=text},{TextColor3='TitlingColor',FontFace='Font'})
- local stats=I:Create('TextLabel',{Name='Subtitle',Text='0 fps | 0 ms',Size=UDim2.new(1,0,0,14),BackgroundTransparency=1,TextSize=14,TextXAlignment=Enum.TextXAlignment.Left,LayoutOrder=2,ZIndex=221,Parent=text},{TextColor3='TitlingColor',FontFace='Font'})
- local hit=I:Create('TextButton',{Name='MonitorInteract',BackgroundTransparency=1,Size=UDim2.fromScale(1,1),Text='',TextTransparency=1,ZIndex=222,Parent=main})
- local monitor={main=main,hit=hit,expanded=false,dragging=false,moved=false,connections={},baseSize=UDim2.fromOffset(185,50)}
- monitor.glow=I:CreateGlow(main,Color3.fromRGB(255,255,255),22,1)
- monitor.scale=I:Create('UIScale',{Scale=1,Parent=main})
- local userInput=f.userInputService
- local function update(fps,ms)stats.Text=tostring(fps)..' fps | '..tostring(ms)..' ms'end
- local function ping()
-  local ok,item=pcall(function()return game:GetService('Stats').Network.ServerStatsItem['Data Ping']end)
-  if not ok or not item then return 0 end
-  local okValue,value=pcall(function()return item:GetValueString()end)
-  if okValue and type(value)=='string'then return tonumber(string.match(value,'%d+%.?%d*'))or 0 end
-  return 0
- end
- local function setWide(value)
-  monitor.expanded=value
-  main.Size=value and UDim2.fromOffset(490,50)or monitor.baseSize
-  main.BackgroundTransparency=value and I.theme.ElementTransparency or I.theme.ElementTransparency
-  heading.Text=value and title..' | performance' or title
-  stats.TextXAlignment=value and Enum.TextXAlignment.Left or Enum.TextXAlignment.Left
-  if value then text.Size=UDim2.new(1,-60,0,32)else text.Size=UDim2.new(1,-60,0,32)end
- end
- function monitor:Destroy()
-  for _,connection in ipairs(self.connections)do pcall(function()connection:Disconnect()end)end
-  pcall(function()main:Destroy()end)
-  if I.performanceMonitor==self then I.performanceMonitor=nil end
- end
- local function add(connection)table.insert(monitor.connections,connection)end
- add(I:ConnectFor(monitor,hit.InputBegan,function(inputObject,processed)
-  if processed then return end
-  local kind=inputObject.UserInputType.Name
-  if kind~='MouseButton1'and kind~='Touch'then return end
-  monitor.dragging=true monitor.moved=false monitor.start=userInput:GetMouseLocation()monitor.offset=main.AbsolutePosition+main.AbsoluteSize*main.AnchorPoint-monitor.start
-  if I.capsuleAnimation then f.tweenService:Create(main,TweenInfo.new(0.2,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Size=UDim2.fromOffset((monitor.expanded and 490 or 185)+12,50)}):Play()f.tweenService:Create(monitor.scale,TweenInfo.new(0.2,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Scale=1.06}):Play()f.tweenService:Create(monitor.glow,TweenInfo.new(0.18,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Transparency=0.25}):Play()end
- end))
- add(I:Connect(userInput.InputEnded,function(inputObject)
-  local kind=inputObject.UserInputType.Name
-  if kind~='MouseButton1'and kind~='Touch'then return end
-  if not monitor.dragging then return end
-  monitor.dragging=false
-  if I.capsuleAnimation then f.tweenService:Create(main,TweenInfo.new(0.28,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Size=monitor.expanded and UDim2.fromOffset(490,50)or monitor.baseSize}):Play()f.tweenService:Create(monitor.scale,TweenInfo.new(0.28,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Scale=1}):Play()f.tweenService:Create(monitor.glow,TweenInfo.new(0.25,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Transparency=1}):Play()end
-  if not monitor.moved then setWide(not monitor.expanded)end
- end))
- add(I:Connect(f.runService.RenderStepped,function(delta)
-  if monitor.dragging then local mouse=userInput:GetMouseLocation()if not monitor.moved and(mouse-monitor.start).Magnitude<4 then else monitor.moved=true local inset=if I.screenGui.IgnoreGuiInset then f.guiService:GetGuiInset()else Vector2.zero local position=mouse+monitor.offset+inset main.Position=UDim2.fromOffset(position.X,position.Y)end end
-  monitor.clock=(monitor.clock or 0)+delta monitor.frames=(monitor.frames or 0)+1 if monitor.clock<0.5 then return end update(math.floor(monitor.frames/monitor.clock+0.5),math.floor(ping()+0.5))monitor.clock=0 monitor.frames=0
- end))
- update(0,0)I.performanceMonitor=monitor return monitor
-end
-if I.PerformanceMonitor or I.performanceMonitor or I.FPSMonitor then L:CreatePerformanceMonitor(I.PerformanceMonitor or I.performanceMonitor or I.FPSMonitor)end return L end function h._syncShinyEffect(I)if not I.shinyEffect or not I.shinyGradient then return end if I._shinyAnimating then return end I._shinyAnimating=true I._shinyGeneration=(I._shinyGeneration or 0)+1 local J=I._shinyGeneration task.spawn(function()while I._shinyGeneration==J and not I.unloaded do I.shinyGradient.Offset=Vector2.new(0,-1.5)local K=f.tweenService:Create(I.shinyGradient,TweenInfo.new(2.8,Enum.EasingStyle.Quint,Enum.EasingDirection.InOut),{Offset=Vector2.new(0,1.5)})I._shinyTween=K K:Play()K.Completed:Wait()task.wait(0.7)end I._shinyAnimating=false I._shinyTween=nil end)end function
+return L end function h._syncShinyEffect(I)if not I.shinyEffect or not I.shinyGradient then return end if I._shinyAnimating then return end I._shinyAnimating=true I._shinyGeneration=(I._shinyGeneration or 0)+1 local J=I._shinyGeneration task.spawn(function()while I._shinyGeneration==J and not I.unloaded do I.shinyGradient.Offset=Vector2.new(0,-1.5)local K=f.tweenService:Create(I.shinyGradient,TweenInfo.new(2.8,Enum.EasingStyle.Quint,Enum.EasingDirection.InOut),{Offset=Vector2.new(0,1.5)})I._shinyTween=K K:Play()K.Completed:Wait()task.wait(0.7)end I._shinyAnimating=false I._shinyTween=nil end)end function
 h._syncLiveAnimation(I)if not I.theme.LiveAnimation then I._liveAnimating=false return end if I._liveAnimating then
 return end I._liveAnimating=true I._liveGeneration=(I._liveGeneration or 0)+1 local J=I._liveGeneration task.spawn(
 function()local K,L=true,TweenInfo.new(10,Enum.EasingStyle.Quint,Enum.EasingDirection.Out)while I._liveGeneration==J and
@@ -2384,7 +2324,7 @@ fromRGB(170,122,140)}end)()end,[38]=function()local aa,ab,ac=a(38)local ad retur
 ]:string}}export type WindowConfiguration={autoSave:boolean?,autoLoad:boolean?,fileName:string?,customFolder:string?}
 export type WindowProps={name:string?,subtitle:string?,theme:Theme?,icon:(string|number)?,IconSize:number?,showName:string?,showIcon:(
 string|number)?,showIconOnly:boolean?,sidebarLayout:boolean?,profile:string?,BlurBackground:boolean?,CapsuleAnimation:boolean?,IconTabAnimation:boolean?,configuration:WindowConfiguration?,
-fallbackFont:(Font|Enum.Font)?,SideBarWidth:(number|string)?,locale:string?,translations:Translations?,translator:Translator?,ThemeAnimation:any?,TransitionTime:number?,ShinyEffect:boolean?,AutoExecute:(boolean|string)?,AfkSystem:boolean?,AutoRejoin:boolean?,MainPreset:boolean?,PerformanceMonitor:any?,FPSMonitor:any?}export type TabProps={
+fallbackFont:(Font|Enum.Font)?,SideBarWidth:(number|string)?,locale:string?,translations:Translations?,translator:Translator?,ThemeAnimation:any?,TransitionTime:number?,ShinyEffect:boolean?,AutoExecute:(boolean|string)?,AfkSystem:boolean?,AutoRejoin:boolean?,MainPreset:boolean?}export type TabProps={
 name:string?,icon:(string|number)?}export type TagProps={text:string?,title:string?,icon:(string|number)?,color:Color3?,
 order:number?}export type SectionProps={name:string?,icon:(string|number)?}export type TextProps={name:string?,text:string?,icon:(string|number)?,imageParagraph:(string|number)?,image:(string|number|Instance)?,imageInstance:Instance?,richText:boolean?,font:any?,fontFace:any?,titleFont:any?,bodyFont:any?,instances:{any}?,content:any?}export type DividerProps={text:string?,spacing:number?,line:boolean?}export type
 GroupProps={direction:string?}export type ButtonProps={name:string?,description:string?,icon:(string|number)?,callback:(
