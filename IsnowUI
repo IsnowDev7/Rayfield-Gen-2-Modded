@@ -1935,7 +1935,101 @@ if I.MainPreset==true then
  profile.LayoutOrder=1 gamePanel.LayoutOrder=2
  info:Select(true)
 end
-return L end function h._syncShinyEffect(I)if not I.shinyEffect or not I.shinyGradient then return end if I._shinyAnimating then return end I._shinyAnimating=true I._shinyGeneration=(I._shinyGeneration or 0)+1 local J=I._shinyGeneration task.spawn(function()while I._shinyGeneration==J and not I.unloaded do I.shinyGradient.Offset=Vector2.new(0,-1.5)local K=f.tweenService:Create(I.shinyGradient,TweenInfo.new(2.8,Enum.EasingStyle.Quint,Enum.EasingDirection.InOut),{Offset=Vector2.new(0,1.5)})I._shinyTween=K K:Play()K.Completed:Wait()task.wait(0.7)end I._shinyAnimating=false I._shinyTween=nil end)end function
+local function monitorHex(value, fallback)
+ if typeof(value)=='Color3' then return '#'..value:ToHex() end
+ if type(value)=='string' and value~='' then return value end
+ return fallback
+end
+function h.CreatePerformanceMonitor(I,J)
+ J=if typeof(J)=='table'then J else{}
+ if I.performanceMonitor then I.performanceMonitor:Destroy() end
+ local T={window=I,expanded=J.defaultExpanded~=false,dragging=false,moved=false,connections={}}
+ local u=f.userInputService
+ local run=f.runService
+ local stats=game:GetService('Stats')
+ local expandedSize=J.expandedSize or J.Size or UDim2.fromOffset(490,46)
+ local collapsedSize=J.collapsedSize or UDim2.fromOffset(42,42)
+ local defaultPosition=J.position or J.Position or UDim2.new(0,14,0,14)
+ local title=tostring(J.title or J.Title or I.showName or I.name or'Rayfield')
+ local textTemplate=J.text or J.Text or'{title} | {fps} fps | {ms} ms'
+ local function resolveColor(value,fallback)return monitorHex(value,fallback)end
+ local function color3(value,fallback)if typeof(value)=='Color3' then return value end if type(value)=='string'then local ok,result=pcall(function()return Color3.fromHex(value:gsub('#',''))end)if ok then return result end end return fallback end
+ local textColor=resolveColor(J.textColor or J.TextColor,'#FFFFFF')
+ local fpsColor=resolveColor(J.fpsColor or J.FpsColor,textColor)
+ local msColor=resolveColor(J.msColor or J.MsColor,textColor)
+ local textColor3=color3(J.textColor or J.TextColor,Color3.fromRGB(255,255,255))
+ local fpsColor3=color3(J.fpsColor or J.FpsColor,textColor3)
+ local msColor3=color3(J.msColor or J.MsColor,textColor3)
+ local function richText(fps,ms)
+  local value=if type(textTemplate)=='function'then textTemplate(fps,ms)else tostring(textTemplate)end
+  value=value:gsub('{title}',title):gsub('{fps}','<font color="'..fpsColor..'">'..tostring(fps)..'</font>'):gsub('{ms}','<font color="'..msColor..'">'..tostring(ms)..'</font>')
+  return value
+ end
+ local function readPing()
+  local ok,item=pcall(function()return stats.Network.ServerStatsItem['Data Ping']end)
+  if ok and item then
+   local okValue,value=pcall(function()return item:GetValueString()end)
+   if okValue then local number=tonumber(string.match(value,'%d+%.?%d*'))if number then return math.floor(number+0.5)end end
+   local okNumber,number=pcall(function()return item:GetValue()end)
+   if okNumber and type(number)=='number'then return math.floor(number+0.5)end
+  end
+  return 0
+ end
+ local function setPositionFromMouse(mouse)
+  local inset=if I.screenGui and I.screenGui.IgnoreGuiInset then f.guiService:GetGuiInset()else Vector2.zero
+  local pos=mouse+T.anchor-inset
+  local viewport=I.screenGui.AbsoluteSize
+  local size=T.main.AbsoluteSize
+  pos=Vector2.new(math.clamp(pos.X,4,math.max(4,viewport.X-size.X-4)),math.clamp(pos.Y,4,math.max(4,viewport.Y-size.Y-4)))
+  T.main.Position=UDim2.fromOffset(pos.X,pos.Y)
+ end
+ T.main=I:Create('Frame',{Name='PerformanceMonitor',Size=expandedSize,Position=defaultPosition,AnchorPoint=Vector2.new(0,0),BorderSizePixel=0,BackgroundColor3=Color3.fromRGB(12,12,12),BackgroundTransparency=J.backgroundTransparency or 0,ZIndex=220,Parent=I.screenGui})
+ I:Create('UICorner',{CornerRadius=J.cornerRadius or UDim.new(0,8),Parent=T.main})
+ T.stroke=I:Create('UIStroke',{Thickness=J.strokeThickness or 2,Color=J.strokeColor or Color3.fromRGB(0,0,0),Transparency=J.strokeTransparency or 0,Parent=T.main})
+ T.iconCircle=I:Create('Frame',{Name='WindowIconCircle',Size=UDim2.fromOffset(30,30),Position=UDim2.new(0,8,0.5,0),AnchorPoint=Vector2.new(0,0.5),BackgroundColor3=J.iconCircleColor or Color3.fromRGB(28,28,28),BorderSizePixel=0,ZIndex=221,Parent=T.main})
+ I:Create('UICorner',{CornerRadius=UDim.new(1,0),Parent=T.iconCircle})
+ T.windowIcon=I:Create('ImageLabel',{Image=I.icon or af.resolve(J.icon or J.Icon or''),Size=UDim2.fromOffset(20,20),Position=UDim2.fromScale(0.5,0.5),AnchorPoint=Vector2.new(0.5,0.5),BackgroundTransparency=1,ImageTransparency=0,ZIndex=222,Parent=T.iconCircle})
+ T.text=I:Create('TextLabel',{Name='MonitorText',Text=richText(0,0),Size=UDim2.new(1,-52,1,0),Position=UDim2.new(0,48,0,0),BackgroundTransparency=1,RichText=J.richText~=false,TextSize=tonumber(J.textSize or J.TextSize)or 18,FontFace=J.fontFace or J.FontFace or f.brandFont(Enum.FontWeight.Medium),TextColor3=textColor3,TextXAlignment=Enum.TextXAlignment.Left,TextYAlignment=Enum.TextYAlignment.Center,TextWrapped=false,ZIndex=222,Parent=T.main})
+ T.fpsIcon=I:Create('ImageLabel',{Name='FPSIcon',Image=af.resolve(J.fpsIcon or J.FpsIcon or'lucide:activity'),Size=UDim2.fromOffset(16,16),Position=UDim2.new(0,54,0.5,0),AnchorPoint=Vector2.new(0,0.5),BackgroundTransparency=1,ImageColor3=fpsColor3,Visible=true,ZIndex=223,Parent=T.main})
+ T.msIcon=I:Create('ImageLabel',{Name='MSIcon',Image=af.resolve(J.msIcon or J.MsIcon or'lucide:wifi'),Size=UDim2.fromOffset(16,16),Position=UDim2.new(0,210,0.5,0),AnchorPoint=Vector2.new(0,0.5),BackgroundTransparency=1,ImageColor3=msColor3,Visible=true,ZIndex=223,Parent=T.main})
+ T.collapsedIcon=I:Create('ImageLabel',{Name='CollapsedEllipsis',Image=af.resolve(J.collapsedIcon or J.CollapsedIcon or'lucide:ellipsis'),Size=UDim2.fromOffset(22,22),Position=UDim2.fromScale(0.5,0.5),AnchorPoint=Vector2.new(0.5,0.5),BackgroundTransparency=1,Visible=false,ZIndex=223,Parent=T.main})
+ T.hit=I:Create('TextButton',{Name='MonitorDrag',Size=UDim2.fromScale(1,1),BackgroundTransparency=1,Text='',TextTransparency=1,AutoButtonColor=false,ZIndex=224,Parent=T.main})
+ local function setExpanded(value,instant)
+  T.expanded=value
+  local duration=if instant then 0 else 0.22
+  local size=value and expandedSize or collapsedSize
+  if duration==0 then T.main.Size=size else f.tweenService:Create(T.main,TweenInfo.new(duration,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Size=size}):Play()end
+  T.iconCircle.Visible=value T.text.Visible=value T.fpsIcon.Visible=value T.msIcon.Visible=value T.collapsedIcon.Visible=not value
+ end
+ function T:SetText(value)textTemplate=value or''if T.text then T.text.Text=richText(T.fps or 0,T.ms or 0)end end
+ function T:SetVisible(value)T.main.Visible=value end
+ function T:SetExpanded(value)if value~=T.expanded then setExpanded(value,false)end end
+ function T:Destroy()for _,connection in T.connections do pcall(function()connection:Disconnect()end)end if T.main then T.main:Destroy()end if I.performanceMonitor==T then I.performanceMonitor=nil end end
+ table.insert(T.connections,I:ConnectFor(T,T.hit.InputBegan,function(input,processed)
+  if processed then return end
+  local kind=input.UserInputType.Name if kind~='MouseButton1'and kind~='Touch'then return end
+  T.dragging=true T.moved=false T.anchor=T.main.AbsolutePosition+T.main.AbsoluteSize*T.main.AnchorPoint-u:GetMouseLocation()
+ end))
+ table.insert(T.connections,I:Connect(u.InputChanged,function(input)
+  if not T.dragging then return end
+  local kind=input.UserInputType.Name if kind~='MouseMovement'and kind~='Touch'then return end
+  local mouse=u:GetMouseLocation() if (mouse-(T.main.AbsolutePosition+T.main.AbsoluteSize*T.main.AnchorPoint)).Magnitude>4 then T.moved=true end
+  setPositionFromMouse(mouse)
+ end))
+ table.insert(T.connections,I:Connect(u.InputEnded,function(input)
+  local kind=input.UserInputType.Name if kind~='MouseButton1'and kind~='Touch'then return end
+  if not T.dragging then return end T.dragging=false if not T.moved then setExpanded(not T.expanded,false)end
+ end))
+ local elapsed=0
+ table.insert(T.connections,I:Connect(run.RenderStepped,function(delta)
+  if not T.main or not T.main.Parent then return end
+  elapsed+=delta if elapsed<0.25 then return end elapsed=0
+  T.fps=math.max(0,math.floor((1/math.max(delta,1/240))+0.5)) T.ms=readPing()
+  if type(textTemplate)=='function'then T.text.Text=richText(T.fps,T.ms)else T.text.Text=richText(T.fps,T.ms)end
+ end))
+ I.performanceMonitor=T setExpanded(T.expanded,true) return T
+end
+if I.PerformanceMonitor or I.performanceMonitor or I.FPSMonitor then L:CreatePerformanceMonitor(I.PerformanceMonitor or I.performanceMonitor or I.FPSMonitor)end return L end function h._syncShinyEffect(I)if not I.shinyEffect or not I.shinyGradient then return end if I._shinyAnimating then return end I._shinyAnimating=true I._shinyGeneration=(I._shinyGeneration or 0)+1 local J=I._shinyGeneration task.spawn(function()while I._shinyGeneration==J and not I.unloaded do I.shinyGradient.Offset=Vector2.new(0,-1.5)local K=f.tweenService:Create(I.shinyGradient,TweenInfo.new(2.8,Enum.EasingStyle.Quint,Enum.EasingDirection.InOut),{Offset=Vector2.new(0,1.5)})I._shinyTween=K K:Play()K.Completed:Wait()task.wait(0.7)end I._shinyAnimating=false I._shinyTween=nil end)end function
 h._syncLiveAnimation(I)if not I.theme.LiveAnimation then I._liveAnimating=false return end if I._liveAnimating then
 return end I._liveAnimating=true I._liveGeneration=(I._liveGeneration or 0)+1 local J=I._liveGeneration task.spawn(
 function()local K,L=true,TweenInfo.new(10,Enum.EasingStyle.Quint,Enum.EasingDirection.Out)while I._liveGeneration==J and
@@ -2324,7 +2418,7 @@ fromRGB(170,122,140)}end)()end,[38]=function()local aa,ab,ac=a(38)local ad retur
 ]:string}}export type WindowConfiguration={autoSave:boolean?,autoLoad:boolean?,fileName:string?,customFolder:string?}
 export type WindowProps={name:string?,subtitle:string?,theme:Theme?,icon:(string|number)?,IconSize:number?,showName:string?,showIcon:(
 string|number)?,showIconOnly:boolean?,sidebarLayout:boolean?,profile:string?,BlurBackground:boolean?,CapsuleAnimation:boolean?,IconTabAnimation:boolean?,configuration:WindowConfiguration?,
-fallbackFont:(Font|Enum.Font)?,SideBarWidth:(number|string)?,locale:string?,translations:Translations?,translator:Translator?,ThemeAnimation:any?,TransitionTime:number?,ShinyEffect:boolean?,AutoExecute:(boolean|string)?,AfkSystem:boolean?,AutoRejoin:boolean?,MainPreset:boolean?}export type TabProps={
+fallbackFont:(Font|Enum.Font)?,SideBarWidth:(number|string)?,locale:string?,translations:Translations?,translator:Translator?,ThemeAnimation:any?,TransitionTime:number?,ShinyEffect:boolean?,AutoExecute:(boolean|string)?,AfkSystem:boolean?,AutoRejoin:boolean?,MainPreset:boolean?,PerformanceMonitor:any?,FPSMonitor:any?}export type TabProps={
 name:string?,icon:(string|number)?}export type TagProps={text:string?,title:string?,icon:(string|number)?,color:Color3?,
 order:number?}export type SectionProps={name:string?,icon:(string|number)?}export type TextProps={name:string?,text:string?,icon:(string|number)?,imageParagraph:(string|number)?,image:(string|number|Instance)?,imageInstance:Instance?,richText:boolean?,font:any?,fontFace:any?,titleFont:any?,bodyFont:any?,instances:{any}?,content:any?}export type DividerProps={text:string?,spacing:number?,line:boolean?}export type
 GroupProps={direction:string?}export type ButtonProps={name:string?,description:string?,icon:(string|number)?,callback:(
