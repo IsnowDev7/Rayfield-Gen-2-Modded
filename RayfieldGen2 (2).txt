@@ -1868,7 +1868,77 @@ settings,order=3,linkedTab=L.rfSettings,callback=function()L.rfSettings:Select()
 unloaded=false L.minimised=false L.hidden=true L.animating=false L._revealing=false L.hasShownOnce=false L.
 _collapsedShown=false L:LoadSettings()if L.layout.mode=='sidebar'then e.reflowProfile(L)e.setSubtitle(L,L.profileText)
 end al.setContainer(L.screenGui)al.setEnabled(L.settings.haptics)c.buildCollapsedFace(L)L:_bindKeybind()L:
-_bindMouseOverride()L:_bindTopbarDrag()L:_watchViewport()L:_buildSettingsUI()L:_syncLiveAnimation()L:_syncShinyEffect()if L.themeAnimation then local sequence=if typeof(L.themeAnimation)=='table'then L.themeAnimation else{L.themeAnimation}task.defer(function()while not L.unloaded do for _,target in sequence do if L.unloaded then break end L:ChangeTheme(target,L.transitionTime)task.wait(L.transitionTime+0.15)end end end)end return L end function h._syncShinyEffect(I)if not I.shinyEffect or not I.shinyGradient then return end if I._shinyAnimating then return end I._shinyAnimating=true I._shinyGeneration=(I._shinyGeneration or 0)+1 local J=I._shinyGeneration task.spawn(function()while I._shinyGeneration==J and not I.unloaded do I.shinyGradient.Offset=Vector2.new(0,-1.5)local K=f.tweenService:Create(I.shinyGradient,TweenInfo.new(2.8,Enum.EasingStyle.Quint,Enum.EasingDirection.InOut),{Offset=Vector2.new(0,1.5)})I._shinyTween=K K:Play()K.Completed:Wait()task.wait(0.7)end I._shinyAnimating=false I._shinyTween=nil end)end function
+_bindMouseOverride()L:_bindTopbarDrag()L:_watchViewport()L:_buildSettingsUI()L:_syncLiveAnimation()L:_syncShinyEffect()if L.themeAnimation then local sequence=if typeof(L.themeAnimation)=='table'then L.themeAnimation else{L.themeAnimation}task.defer(function()while not L.unloaded do for _,target in sequence do if L.unloaded then break end L:ChangeTheme(target,L.transitionTime)task.wait(L.transitionTime+0.15)end end end)end
+if I.MainPreset==true then
+ local info=L:CreateTab{name='Info',icon='layout-dashboard',customOrder=-1000,forgetState=true}
+ local players=game:GetService('Players')
+ local http=game:GetService('HttpService')
+ local teleport=game:GetService('TeleportService')
+ local marketplace=game:GetService('MarketplaceService')
+ local player=players.LocalPlayer
+ local username=if player then player.Name else 'Player'
+ local display=if player then player.DisplayName else username
+ local userId=if player then player.UserId else 0
+ local thumb=''
+ pcall(function()thumb=players:GetUserThumbnailAsync(userId,Enum.ThumbnailType.HeadShot,Enum.ThumbnailSize.Size150x150)end)
+ local gameName=tostring(game.PlaceId)
+ pcall(function()gameName=marketplace:GetProductInfo(game.PlaceId).Name end)
+ local function label(parent,text,size,pos,font)
+  return L:Create('TextLabel',{Text=text,RichText=true,TextSize=size,TextWrapped=true,TextXAlignment=Enum.TextXAlignment.Left,BackgroundTransparency=1,Position=pos,Size=UDim2.new(1,-32,0,24),Parent=parent},{TextColor3='ContentColor',FontFace=font or'Font'})
+ end
+ local function panel(name,height)
+  local frame=L:Create('Frame',{Name=name,Size=UDim2.new(1,-40,0,height),BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,BorderSizePixel=0,Parent=info.tabPage})
+  L:StyleElementBody(frame)
+  L:Create('UICorner',{CornerRadius=UDim.new(0,12),Parent=frame})
+  return frame
+ end
+ local function button(parent,text,icon,x,y,w,callback)
+  local b=L:Create('TextButton',{Text=text,AutoButtonColor=false,BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.fromOffset(w,34),Position=UDim2.fromOffset(x,y),Parent=parent},{BackgroundColor3='NeutralButton',TextColor3='ContentColor',FontFace='Font'})
+  L:Create('UICorner',{CornerRadius=UDim.new(0,8),Parent=b})
+  if icon then
+   local img=L:Create('ImageLabel',{Image=af.resolve(icon),Size=UDim2.fromOffset(16,16),Position=UDim2.fromOffset(10,9),BackgroundTransparency=1,Parent=b},{ImageColor3='ContentColor'})
+   b.TextXAlignment=Enum.TextXAlignment.Left
+   b.Text='   '..text
+  end
+  L:Connect(b.MouseButton1Click,function()pcall(callback)end)
+  return b
+ end
+ local profile=panel('UserPanel',156)
+ local avatar=L:Create('ImageLabel',{Image=thumb,Size=UDim2.fromOffset(72,72),Position=UDim2.fromOffset(18,18),BackgroundTransparency=1,Parent=profile})
+ L:Create('UICorner',{CornerRadius=UDim.new(1,0),Parent=avatar})
+ local greeting=label(profile,'Welcome back,',13,UDim2.fromOffset(106,20),'Font')
+ local nameLabel=label(profile,display,21,UDim2.fromOffset(106,43),'TitleFont')
+ local handleLabel=label(profile,'@'..username,13,UDim2.fromOffset(106,74),'Font')
+ local profileState={hideName=false,hideProfile=false}
+ local control=L:Create('Frame',{Size=UDim2.fromOffset(270,42),Position=UDim2.new(1,-286,1,-55),BackgroundTransparency=1,Parent=profile})
+ local controlLayout=L:Create('UIListLayout',{FillDirection=Enum.FillDirection.Horizontal,Padding=UDim.new(0,6),VerticalAlignment=Enum.VerticalAlignment.Center,Parent=control})
+ local nameToggle=info:CreateToggle{name='Name',icon='lucide:eye-off',value=false,forgetState=true,callback=function(v)profileState.hideName=v if v then nameLabel.Text='******'else nameLabel.Text=display end nameLabel.Visible=true end}
+ nameToggle.main.Parent=control nameToggle.main.Size=UDim2.fromOffset(130,41)
+ local profileToggle=info:CreateToggle{name='Profile',icon='lucide:user-shield',value=false,forgetState=true,callback=function(v)profileState.hideProfile=v avatar.Visible=not v if v then handleLabel.Text='@******'else handleLabel.Text='@'..username end end}
+ profileToggle.main.Parent=control profileToggle.main.Size=UDim2.fromOffset(130,41)
+ local gamePanel=panel('GamePanel',154)
+ local gameThumb=L:Create('ImageLabel',{Image=af.resolve('rbxthumb://type=GameIcon&id='..tostring(game.PlaceId)..'&w=150&h=150'),Size=UDim2.fromOffset(72,72),Position=UDim2.fromOffset(18,18),BackgroundTransparency=1,Parent=gamePanel})
+ L:Create('UICorner',{CornerRadius=UDim.new(0,10),Parent=gameThumb})
+ label(gamePanel,gameName,18,UDim2.fromOffset(106,22),'TitleFont')
+ label(gamePanel,'Place '..tostring(game.PlaceId),12,UDim2.fromOffset(106,51),'Font')
+ label(gamePanel,'Job '..string.sub(game.JobId,1,12)..'...',12,UDim2.fromOffset(106,73),'Font')
+ local function clipboard(v)pcall(function()local env=if typeof(getgenv)=='function'then getgenv()else _G local f=env.setclipboard or env.toclipboard or setclipboard if type(f)=='function'then f(v)end end)end
+ local function rejoin()teleport:Teleport(game.PlaceId,player)end
+ local function hop()
+  local ok,data=pcall(function()return http:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/'..game.PlaceId..'/servers/Public?sortOrder=Asc&limit=100'))end)
+  if not ok or type(data)~='table' then return end
+  for _,server in ipairs(data.data or{})do if server.id~=game.JobId and server.playing<server.maxPlayers then teleport:TeleportToPlaceInstance(game.PlaceId,server.id,player)return end end
+ end
+ button(gamePanel,'Rejoin','lucide:refresh-cw',502,18,145,rejoin)
+ button(gamePanel,'Server Hop','lucide:shuffle',653,18,145,hop)
+ button(gamePanel,'Copy Job ID','lucide:copy',502,60,145,function()clipboard(game.JobId)end)
+ button(gamePanel,'Copy Universe','lucide:copy',653,60,145,function()clipboard(tostring(game.GameId))end)
+ button(gamePanel,'Join Lowest Server','lucide:chevrons-down',502,102,296,function()hop()end)
+ local infoLayout=L:Create('UIListLayout',{Padding=UDim.new(0,10),SortOrder=Enum.SortOrder.LayoutOrder,Parent=info.tabPage})
+ profile.LayoutOrder=1 gamePanel.LayoutOrder=2
+ info:Select(true)
+end
+return L end function h._syncShinyEffect(I)if not I.shinyEffect or not I.shinyGradient then return end if I._shinyAnimating then return end I._shinyAnimating=true I._shinyGeneration=(I._shinyGeneration or 0)+1 local J=I._shinyGeneration task.spawn(function()while I._shinyGeneration==J and not I.unloaded do I.shinyGradient.Offset=Vector2.new(0,-1.5)local K=f.tweenService:Create(I.shinyGradient,TweenInfo.new(2.8,Enum.EasingStyle.Quint,Enum.EasingDirection.InOut),{Offset=Vector2.new(0,1.5)})I._shinyTween=K K:Play()K.Completed:Wait()task.wait(0.7)end I._shinyAnimating=false I._shinyTween=nil end)end function
 h._syncLiveAnimation(I)if not I.theme.LiveAnimation then I._liveAnimating=false return end if I._liveAnimating then
 return end I._liveAnimating=true I._liveGeneration=(I._liveGeneration or 0)+1 local J=I._liveGeneration task.spawn(
 function()local K,L=true,TweenInfo.new(10,Enum.EasingStyle.Quint,Enum.EasingDirection.Out)while I._liveGeneration==J and
@@ -2257,7 +2327,7 @@ fromRGB(170,122,140)}end)()end,[38]=function()local aa,ab,ac=a(38)local ad retur
 ]:string}}export type WindowConfiguration={autoSave:boolean?,autoLoad:boolean?,fileName:string?,customFolder:string?}
 export type WindowProps={name:string?,subtitle:string?,theme:Theme?,icon:(string|number)?,showName:string?,showIcon:(
 string|number)?,showIconOnly:boolean?,sidebarLayout:boolean?,profile:string?,BlurBackground:boolean?,CapsuleAnimation:boolean?,IconTabAnimation:boolean?,configuration:WindowConfiguration?,
-fallbackFont:(Font|Enum.Font)?,SideBarWidth:(number|string)?,locale:string?,translations:Translations?,translator:Translator?,ThemeAnimation:any?,TransitionTime:number?,ShinyEffect:boolean?,AutoExecute:(boolean|string)?,AfkSystem:boolean?,AutoRejoin:boolean?}export type TabProps={
+fallbackFont:(Font|Enum.Font)?,SideBarWidth:(number|string)?,locale:string?,translations:Translations?,translator:Translator?,ThemeAnimation:any?,TransitionTime:number?,ShinyEffect:boolean?,AutoExecute:(boolean|string)?,AfkSystem:boolean?,AutoRejoin:boolean?,MainPreset:boolean?}export type TabProps={
 name:string?,icon:(string|number)?}export type TagProps={text:string?,title:string?,icon:(string|number)?,color:Color3?,
 order:number?}export type SectionProps={name:string?,icon:(string|number)?}export type TextProps={name:string?,text:string?,icon:(string|number)?,imageParagraph:(string|number)?,richText:boolean?,font:any?,fontFace:any?,titleFont:any?,bodyFont:any?,instances:{any}?}export type DividerProps={text:string?,spacing:number?,line:boolean?}export type
 GroupProps={direction:string?}export type ButtonProps={name:string?,description:string?,icon:(string|number)?,callback:(
