@@ -1915,10 +1915,11 @@ if I.MainPreset==true then
  local controlLayout=L:Create('UIListLayout',{FillDirection=Enum.FillDirection.Horizontal,Padding=UDim.new(0,6),VerticalAlignment=Enum.VerticalAlignment.Center,Parent=control})
  local nameToggle=info:CreateToggle{name='Name',icon='lucide:eye-off',value=false,forgetState=true,callback=function(v)profileState.hideName=v if v then nameLabel.Text='******'else nameLabel.Text=display end nameLabel.Visible=true end}
  nameToggle.main.Parent=control nameToggle._fixedWidth=130 nameToggle.main.Size=UDim2.fromOffset(130,41) nameToggle.container.Size=UDim2.fromOffset(90,16) nameToggle.title.Size=UDim2.fromOffset(70,16) nameToggle.title.AutomaticSize=Enum.AutomaticSize.None nameToggle.title.TextTruncate=Enum.TextTruncate.AtEnd
- local profileToggle=info:CreateToggle{name='Profile',icon='lucide:user-shield',value=false,forgetState=true,callback=function(v)profileState.hideProfile=v avatar.Visible=not v profileEye.Visible=v if profileToggle.iconLabel then profileToggle.iconLabel.Image=af.resolve(v and 'lucide:eye-dashed' or 'lucide:user-shield') end if v then handleLabel.Text='@******'else handleLabel.Text='@'..username end end}
+ local profileToggle
+ profileToggle=info:CreateToggle{name='Profile',icon='lucide:user-shield',value=false,forgetState=true,callback=function(v)profileState.hideProfile=v avatar.Visible=not v profileEye.Visible=v if profileToggle and profileToggle.iconLabel then profileToggle.iconLabel.Image=af.resolve(v and 'lucide:eye-dashed' or 'lucide:user-shield') end if v then handleLabel.Text='@******'else handleLabel.Text='@'..username end end}
  profileToggle.main.Parent=control profileToggle._fixedWidth=130 profileToggle.main.Size=UDim2.fromOffset(130,41) profileToggle.container.Size=UDim2.fromOffset(90,16) profileToggle.title.Size=UDim2.fromOffset(70,16) profileToggle.title.AutomaticSize=Enum.AutomaticSize.None profileToggle.title.TextTruncate=Enum.TextTruncate.AtEnd
  local gamePanel=panel('GamePanel',154)
- local gameThumb=L:Create('ImageLabel',{Image=af.resolve('rbxthumb://type=GameIcon&id='..tostring(game.GameId)..'&w=420&h=420'),Size=UDim2.fromOffset(72,72),Position=UDim2.fromOffset(18,18),BackgroundTransparency=1,ImageTransparency=0,Parent=gamePanel})
+ local gameThumb=L:Create('ImageLabel',{Image=af.resolve('rbxthumb://type=GameIcon&id='..tostring(game.GameId)..'&w=150&h=150'),Size=UDim2.fromOffset(72,72),Position=UDim2.fromOffset(18,18),BackgroundTransparency=1,ImageTransparency=0,Parent=gamePanel})
  L:Create('UICorner',{CornerRadius=UDim.new(0,10),Parent=gameThumb})
  label(gamePanel,gameName,18,UDim2.fromOffset(106,22),'TitleFont')
  label(gamePanel,'Place '..tostring(game.PlaceId),12,UDim2.fromOffset(106,51),'Font')
