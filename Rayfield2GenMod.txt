@@ -1916,7 +1916,7 @@ if I.MainPreset==true then
  local profileToggle
  profileToggle=info:CreateToggle{name='Profile',icon='lucide:user-shield',value=false,forgetState=true,callback=function(v)profileState.hideProfile=v avatar.Visible=not v profileEye.Visible=v if profileToggle and profileToggle.iconLabel then profileToggle.iconLabel.Image=af.resolve(v and 'lucide:eye-off' or 'lucide:user-shield') end if v then handleLabel.Text='@******'else handleLabel.Text='@'..username end end}
  profileToggle.main.Parent=profile profileToggle.main.Position=UDim2.fromOffset(208,100) profileToggle._fixedWidth=180 profileToggle.main.Size=UDim2.fromOffset(180,41) profileToggle.container.Size=UDim2.fromOffset(90,16) profileToggle.title.Size=UDim2.fromOffset(65,16) profileToggle.title.AutomaticSize=Enum.AutomaticSize.None profileToggle.title.TextTruncate=Enum.TextTruncate.AtEnd
- local gamePanel=panel('GamePanel',154)
+ local gamePanel=panel('GamePanel',204)
  local gameThumb=L:Create('ImageLabel',{Image=af.resolve('rbxthumb://type=GameIcon&id='..tostring(game.GameId)..'&w=150&h=150'),Size=UDim2.fromOffset(72,72),Position=UDim2.fromOffset(18,18),BackgroundTransparency=1,ImageTransparency=0,Parent=gamePanel})
  L:Create('UICorner',{CornerRadius=UDim.new(0,10),Parent=gameThumb})
  label(gamePanel,gameName,18,UDim2.fromOffset(106,22),'TitleFont')
@@ -1929,11 +1929,11 @@ if I.MainPreset==true then
   if not ok or type(data)~='table' then return end
   for _,server in ipairs(data.data or{})do if server.id~=game.JobId and server.playing<server.maxPlayers then teleport:TeleportToPlaceInstance(game.PlaceId,server.id,player)return end end
  end
- button(gamePanel,'Rejoin','lucide:refresh-cw',502,18,145,rejoin)
- button(gamePanel,'Server Hop','lucide:shuffle',653,18,145,hop)
- button(gamePanel,'Copy Job ID','lucide:copy',502,60,145,function()clipboard(game.JobId)end)
- button(gamePanel,'Copy Universe','lucide:copy',653,60,145,function()clipboard(tostring(game.GameId))end)
- button(gamePanel,'Join Lowest Server','lucide:chevrons-down',502,102,296,function()hop()end)
+ button(gamePanel,'Rejoin','lucide:refresh-cw',18,112,145,rejoin)
+ button(gamePanel,'Server Hop','lucide:shuffle',173,112,145,hop)
+ button(gamePanel,'Copy Job ID','lucide:copy',328,112,145,function()clipboard(game.JobId)end)
+ button(gamePanel,'Copy Universe','lucide:copy',483,112,145,function()clipboard(tostring(game.GameId))end)
+ button(gamePanel,'Join Lowest Server','lucide:chevrons-down',18,154,296,function()hop()end)
  local infoLayout=L:Create('UIListLayout',{Padding=UDim.new(0,10),SortOrder=Enum.SortOrder.LayoutOrder,Parent=info.tabPage})
  profile.LayoutOrder=1 gamePanel.LayoutOrder=2
  info:Select(true)
