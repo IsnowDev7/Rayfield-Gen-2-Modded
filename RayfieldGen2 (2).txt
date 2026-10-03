@@ -1737,7 +1737,24 @@ subheading=I.subtitle or I.Subtitle,layout=K,size=w(K.mode),instances={},connect
 or I.ShowIconOnly or false,profileText=I.profile or I.Profile,blurBackground=I.BlurBackground==true, capsuleAnimation=I.CapsuleAnimation==true,shinyEffect=I.ShinyEffect==true,themeAnimation=I.ThemeAnimation or I.themeAnimation,transitionTime=tonumber(I.TransitionTime)or tonumber(I.transitionTime)or(type(I.TransitionTime)=='string'and tonumber(string.match(I.TransitionTime,'%d+%.?%d*')))or(type(I.transitionTime)=='string'and tonumber(string.match(I.transitionTime,'%d+%.?%d*')))or 0.5,iconTabAnimation=false,themeProperties={},localeProperties={},tabs={},tabSections
 ={},tags={},selectedTab=nil,theme=H(I.theme or I.Theme),controls={},configuration=(function()local L=I.configuration or
 I.Configuration if not L then return{}end return{autoSave=L.autoSave or L.AutoSave,autoLoad=L.autoLoad or L.AutoLoad,
-fileName=L.fileName or L.FileName,customFolder=L.customFolder or L.CustomFolder}end)()},h)L.Flags=setmetatable({},{
+fileName=L.fileName or L.FileName,customFolder=L.customFolder or L.CustomFolder}end)()},h)
+if I.AfkSystem==true then
+ local ok,pl=pcall(function()return game:GetService('Players').LocalPlayer end)
+ if ok and pl then
+  local vu=game:GetService('VirtualUser')
+  local c=pl.Idled:Connect(function()
+   pcall(function()vu:CaptureController()vu:ClickButton2(Vector2.new())end)
+  end)
+  table.insert(L.connections,c)
+  task.spawn(function()
+   while not L.unloaded do
+    task.wait(30)
+    if not L.unloaded then pcall(function()vu:CaptureController()vu:ClickButton2(Vector2.new())end)end
+   end
+  end)
+ end
+end
+L.Flags=setmetatable({},{
 __index=function(M,N)local O=L.controls[N]return O and O.value end,__newindex=function(M,N,O)local P=L.controls[N]if not
 P then ak.warn("Rayfield: no flag '"..tostring(N).."' to set")return end P:Set(O)end,__iter=function()local M return
 function()local N M,N=next(L.controls,M)if M then return M,N.value end return nil end end})L.settings={toggleKeybind=
@@ -2193,7 +2210,7 @@ fromRGB(170,122,140)}end)()end,[38]=function()local aa,ab,ac=a(38)local ad retur
 ]:string}}export type WindowConfiguration={autoSave:boolean?,autoLoad:boolean?,fileName:string?,customFolder:string?}
 export type WindowProps={name:string?,subtitle:string?,theme:Theme?,icon:(string|number)?,showName:string?,showIcon:(
 string|number)?,showIconOnly:boolean?,sidebarLayout:boolean?,profile:string?,BlurBackground:boolean?,CapsuleAnimation:boolean?,IconTabAnimation:boolean?,configuration:WindowConfiguration?,
-fallbackFont:(Font|Enum.Font)?,SideBarWidth:(number|string)?,locale:string?,translations:Translations?,translator:Translator?,ThemeAnimation:any?,TransitionTime:number?,ShinyEffect:boolean?,AutoExecute:(boolean|string)?}export type TabProps={
+fallbackFont:(Font|Enum.Font)?,SideBarWidth:(number|string)?,locale:string?,translations:Translations?,translator:Translator?,ThemeAnimation:any?,TransitionTime:number?,ShinyEffect:boolean?,AutoExecute:(boolean|string)?,AfkSystem:boolean?}export type TabProps={
 name:string?,icon:(string|number)?}export type TagProps={text:string?,title:string?,icon:(string|number)?,color:Color3?,
 order:number?}export type SectionProps={name:string?,icon:(string|number)?}export type TextProps={name:string?,text:string?,icon:(string|number)?,instances:{any}?}export type DividerProps={text:string?,spacing:number?,line:boolean?}export type
 GroupProps={direction:string?}export type ButtonProps={name:string?,description:string?,icon:(string|number)?,callback:(
