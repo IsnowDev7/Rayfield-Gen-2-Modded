@@ -1,0 +1,79 @@
+-- IsnowUI Dropdown Item Icons Example
+-- Load the updated IsnowUI library from GitHub:
+local Rayfield = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/IsnowDev7/Rayfield-Gen-2-Modded/main/IsnowUI"
+))()
+
+local Window = Rayfield:CreateWindow({
+    name = "Dropdown Icon Demo",
+    subtitle = "IsnowUI",
+    icon = "lucide:paw-print",
+})
+
+local Tab = Window:CreateTab({
+    name = "Pets",
+    icon = "lucide:paw-print",
+})
+
+-- Icon = true enables icons for each dropdown item.
+-- Each item can provide Icon as a numeric asset ID, rbxassetid URL, or image URL.
+local PetDropdown = Tab:CreateDropdown({
+    name = "Select Pet",
+    Icon = true,
+    options = {
+        {
+            name = "Dog",
+            Icon = 1234567890,
+        },
+        {
+            name = "Cat",
+            Icon = "rbxassetid://9876543210",
+        },
+        {
+            name = "Dragon",
+            Icon = "https://example.com/dragon.png",
+        },
+        {
+            name = "Wolf",
+            Icon = "lucide:wolf",
+        },
+    },
+    callback = function(value)
+        print("Selected pet:", value)
+    end,
+})
+
+-- IconResolver is useful when your own code fetches an asset ID for each pet.
+-- It may return a number, rbxassetid:// URL, direct image URL, or Lucide name.
+local petAssetIds = {
+    Bunny = 1111111111,
+    Fox = 2222222222,
+    Bear = 3333333333,
+}
+
+local DynamicPetDropdown = Tab:CreateDropdown({
+    name = "Dynamic Pet Icons",
+    Icon = true,
+    options = {
+        { name = "Bunny" },
+        { name = "Fox" },
+        { name = "Bear" },
+    },
+    IconResolver = function(petName, petOption)
+        -- Replace this table with your own pet/asset fetcher.
+        -- Example: return GetPetIcon(petName)
+        return petAssetIds[petName]
+    end,
+    callback = function(value)
+        print("Selected dynamic pet:", value)
+    end,
+})
+
+-- The old string-only format still works normally when Icon = true is omitted.
+Tab:CreateDropdown({
+    name = "Normal Dropdown",
+    options = { "One", "Two", "Three" },
+    callback = function(value)
+        print("Selected:", value)
+    end,
+})

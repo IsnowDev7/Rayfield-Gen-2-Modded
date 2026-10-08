@@ -176,7 +176,7 @@ if#R>=3 and not Q then if R[1]<=1 and R[2]<=1 and R[3]<=1 then return Color3.new
 Color3.fromRGB(J(R[1]),J(R[2]),J(R[3]))end return nil end local function O(P,Q)if typeof(P)=='Color3'then return P end
 if typeof(P)=='string'then return N(P)or Q end return Q end function f.new(P,Q)Q=if typeof(Q)=='table'then Q else{}local
 R=setmetatable({tab=assert(P,'Missing argument #1 (Tab expected)'),window=P.window,name=Q.name or Q.Name or
-'Color Picker',icon=Q.icon or Q.Icon,description=Q.description or Q.Description,forgetState=Q.forgetState or Q.
+'Color Picker',icon=(Q.icon~=true and Q.icon) or (Q.Icon~=true and Q.Icon),description=Q.description or Q.Description,forgetState=Q.forgetState or Q.
 ForgetState or P.forgetState,callback=Q.callback or Q.Callback or function()end,_isOpen=false},f)R.value=O(Q.color or Q.
 Color or Q.value or Q.Value or Q.default,Color3.fromRGB(255,255,255))R.hue,R.sat,R.val=R.value:ToHSV()local S=Q.alpha or
 Q.Alpha R.alpha=if type(S)=='number'then I(S)else 1 R.flag=Q.flag or Q.Flag or(not R.forgetState and i.
@@ -473,7 +473,7 @@ setmetatable({tab=assert(P,'Missing argument #1 (Tab expected)'),window=P.window
 ,flag=Q.flag or Q.Flag or(not(Q.forgetState or Q.ForgetState or P.forgetState)and i.deriveFlagFromName(Q.name or Q.Name
 or'Dropdown')or nil),callback=Q.callback or Q.Callback or function()end,options=L(R),multiSelect=S,placeholderText=l.
 resolve(Q.placeholder or Q.Placeholder or'None'),value=M(Q.value or Q.Value or Q.currentOption or Q.CurrentOption,S),
-_isOpen=false,_optionFrames={},optionColors=Q.optionColors or Q.OptionColors or Q.colors or Q.Colors or{}},f)for _,option in R do if typeof(option)=='table'then local label=option.name or option.Name or option.text or option.Text or option.label or option.Label or option.value or option.Value or option[1] local color=option.color or option.Color or option.labelColor or option.LabelColor or option[2] if typeof(label)=='string'and(color~=nil)then T.optionColors[label]=color end end end T._desiredValue=T.value T.value=N(T.value,T.options)T.window:_registerControl(T)T.main
+_isOpen=false,_optionFrames={},optionColors=Q.optionColors or Q.OptionColors or Q.colors or Q.Colors or{},optionIcons={},showOptionIcons=Q.icon==true or Q.Icon==true,optionIconResolver=Q.iconResolver or Q.IconResolver or Q.getIcon or Q.GetIcon}},f)for _,option in R do if typeof(option)=='table'then local label=option.name or option.Name or option.text or option.Text or option.label or option.Label or option.value or option.Value or option[1] local color=option.color or option.Color or option.labelColor or option.LabelColor or option[2] if typeof(label)=='string'and(color~=nil)then T.optionColors[label]=color end local icon=option.icon or option.Icon or option.image or option.Image or option[3] if T.showOptionIcons and icon~=true and icon~=nil then T.optionIcons[label]=icon elseif T.showOptionIcons and type(T.optionIconResolver)=='function' then local ok,resolved=pcall(T.optionIconResolver,label,option)if ok and resolved~=nil then T.optionIcons[label]=resolved end end end end T._desiredValue=T.value T.value=N(T.value,T.options)T.window:_registerControl(T)T.main
 =T.window:Create('Frame',{Size=UDim2.new(1,-20,0,41),BorderSizePixel=0,Name=T.name,BackgroundTransparency=1,Parent=T.tab
 .tabPage})T.top=T.window:Create('Frame',{Size=UDim2.new(1,0,0,41),Position=UDim2.fromScale(0,0),BorderSizePixel=0,
 BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,ZIndex=1,Parent=T.main},{BackgroundTransparency=
@@ -516,24 +516,22 @@ local function V(W,X)local Y=U(W.name)local Z,_,aa,ab=if T._isOpen then(Y and 0.
 0 or 0.3)else 1,if T._isOpen then(Y and 0 or 0.7)else 1,if T._isOpen then(Y and 0.85 or 0.93)else 1 j.assign(W.checkIcon
 ,'Image',if Y then q else r)if X then local ac=TweenInfo.new(0.3,Enum.EasingStyle.Exponential,Enum.EasingDirection.Out)h
 .tweenService:Create(W.frame,ac,{BackgroundTransparency=Z}):Play()h.tweenService:Create(W.title,ac,{TextTransparency=_})
-:Play()h.tweenService:Create(W.checkIcon,ac,{ImageTransparency=aa}):Play()h.tweenService:Create(W.stroke,ac,{
-Transparency=ab}):Play()else W.frame.BackgroundTransparency=Z W.title.TextTransparency=_ W.checkIcon.ImageTransparency=
-aa W.stroke.Transparency=ab end end local function aa()if T.multiSelect then local ab=#T.value if ab==0 then T.
+:Play()h.tweenService:Create(W.checkIcon,ac,{ImageTransparency=aa}):Play()if W.itemIcon then h.tweenService:Create(W.itemIcon,ac,{ImageTransparency=if T._isOpen then 0.15 else 1}):Play()end h.tweenService:Create(W.stroke,ac,{
+Transparency=ab}):Play()else W.frame.BackgroundTransparency=Z W.title.TextTransparency=_ W.checkIcon.ImageTransparency=aa if W.itemIcon then W.itemIcon.ImageTransparency=T._isOpen and 0.15 or 1 end W.stroke.Transparency=ab end end local function aa()if T.multiSelect then local ab=#T.value if ab==0 then T.
 selectedLabel.Text=T.placeholderText elseif ab==1 then T.selectedLabel.Text=T.value[1]else T.selectedLabel.Text=l.
 resolve'Various'end else T.selectedLabel.Text=T.value[1]or T.placeholderText end local selected=T.value[1]and T.optionColors[T.value[1]] T.selectedLabel.TextColor3=selected or T.window.theme.ContentColor end T._renderOptionState=V T.
-_updateSelectedLabel=aa T._applyOptionColor=function()local selected=T.value[1]and T.optionColors[T.value[1]]T.selectedLabel.TextColor3=selected or T.window.theme.ContentColor end local function ab(ac)local W=T.window:Create('Frame',{Size=UDim2.new(1,-12,0,x),BorderSizePixel=
+_updateSelectedLabel=aa T._applyOptionColor=function()local selected=T.value[1]and T.optionColors[T.value[1]]T.selectedLabel.TextColor3=selected or T.window.theme.ContentColor end local function ab(ac)local optionIcon=T.optionIcons[ac]local W=T.window:Create('Frame',{Size=UDim2.new(1,-12,0,x),BorderSizePixel=
 0,LayoutOrder=#T._optionFrames+1,BackgroundTransparency=1,Parent=T.list},{BackgroundColor3='DropdownHighlight'})local X,
 Y,Z,_=T.window:Create('UICorner',{CornerRadius=u,Parent=W}),T.window:Create('UIStroke',{Color=Color3.fromRGB(255,255,255
 ),Transparency=1,Parent=W}),T.window:Create('TextButton',{BackgroundTransparency=1,Size=UDim2.fromScale(1,1),Text='',
 TextTransparency=1,ZIndex=50,Parent=W}),T.window:Create('Frame',{AnchorPoint=Vector2.new(0,0.5),Position=UDim2.new(0,14,
 0.5,0),Size=UDim2.fromOffset(170,16),BorderSizePixel=0,BackgroundTransparency=1,ZIndex=5,Parent=W})T.window:Create(
 'UIListLayout',{Padding=UDim.new(0,5),FillDirection=Enum.FillDirection.Horizontal,VerticalAlignment=Enum.
-VerticalAlignment.Center,SortOrder=Enum.SortOrder.LayoutOrder,Parent=_})local ad,ae=T.window:Create('ImageLabel',{Image=
+VerticalAlignment.Center,SortOrder=Enum.SortOrder.LayoutOrder,Parent=_})local optionImage=nil if optionIcon~=nil then local resolved=optionIcon if type(resolved)=='number' or (type(resolved)=='string' and string.match(resolved,'^%d+$'))then resolved='rbxassetid://'..tostring(resolved)elseif type(resolved)=='string' then local ok,image=pcall(j.resolve,resolved)if ok and image then resolved=image end end if type(resolved)=='string'and resolved~=''then optionImage=T.window:Create('ImageLabel',{Image=resolved,Size=UDim2.fromOffset(16,16),BorderSizePixel=0,BackgroundTransparency=1,ImageTransparency=1,ZIndex=5,Parent=_},{ImageColor3='ContentColor'})end end local ad,ae=T.window:Create('ImageLabel',{Image=
 'rbxassetid://'..tostring(q),Size=UDim2.fromOffset(16,16),BorderSizePixel=0,BackgroundTransparency=1,ImageTransparency=1
 ,ZIndex=5,Parent=_},{ImageColor3='ContentColor'}),T.window:Create('TextLabel',{Text=ac,Size=UDim2.fromOffset(170,16),
 BorderSizePixel=0,BackgroundTransparency=1,TextSize=16,TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=true,
-LayoutOrder=1,TextTransparency=1,ZIndex=5,Parent=_},{TextColor3='ContentColor',FontFace='Font'})if T.optionColors[ac]then ae.TextColor3=T.optionColors[ac]end local af={name=ac,frame=
-W,interact=Z,title=ae,checkIcon=ad,container=_,stroke=Y,corner=X,connections={}}table.insert(af.connections,T.window:
+LayoutOrder=1,TextTransparency=1,ZIndex=5,Parent=_},{TextColor3='ContentColor',FontFace='Font'})if T.optionColors[ac]then ae.TextColor3=T.optionColors[ac]end local af={name=ac,frame=W,interact=Z,title=ae,checkIcon=ad,itemIcon=optionImage,container=_,stroke=Y,corner=X,connections={}}table.insert(af.connections,T.window:
 ConnectFor(T,W.MouseEnter,function()if not T._isOpen or not T.window:_interactive()then return end if U(af.name)then
 return end h.tweenService:Create(W,TweenInfo.new(0.2,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{
 BackgroundTransparency=0.9}):Play()h.tweenService:Create(ae,TweenInfo.new(0.2,Enum.EasingStyle.Quint,Enum.
