@@ -1,0 +1,90 @@
+--// IsnowUI Bottom Sidebar Dock Example
+--// This uses the local uncommitted SidebarDock implementation.
+--// After publishing, load the IsnowUI raw URL from GitHub.
+
+local IsnowUI = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/IsnowDev7/Rayfield-Gen-2-Modded/main/IsnowUI"
+))()
+
+local Window = IsnowUI:CreateWindow({
+    name = "Bottom Dock Demo",
+    subtitle = "Landscape sidebar",
+    icon = "lucide:layout-dashboard",
+
+    sidebarLayout = true,
+    SidebarDock = true,
+
+    BlurBackground = true,
+    CapsuleAnimation = true,
+
+    configuration = {
+        autoSave = false,
+        autoLoad = false,
+        customFolder = "BottomDockDemo",
+        fileName = "settings",
+    },
+})
+
+local Home = Window:CreateTab({
+    name = "Home",
+    icon = "lucide:house",
+})
+
+Home:CreateDivider({
+    text = "HOME",
+})
+
+Home:CreateText({
+    name = "Status",
+    text = "The sidebar is centered at the bottom and uses a horizontal layout.",
+})
+
+local Pets = Window:CreateTab({
+    name = "Pets",
+    icon = "lucide:paw-print",
+})
+
+Pets:CreateDivider({
+    text = "PETS",
+})
+
+Pets:CreateDropdown({
+    name = "Pet",
+    options = { "Dog", "Cat", "Bunny" },
+})
+
+local Settings = Window:CreateTab({
+    name = "Settings",
+    icon = "lucide:settings",
+})
+
+Settings:CreateDivider({
+    text = "SETTINGS",
+})
+
+Settings:CreateToggle({
+    name = "Example Toggle",
+    default = false,
+    callback = function(value)
+        print("Example Toggle:", value)
+    end,
+})
+
+-- Add more tabs later. The dock recalculates its width automatically.
+task.delay(2, function()
+    local Extra = Window:CreateTab({
+        name = "Extra",
+        icon = "lucide:sparkles",
+    })
+
+    Extra:CreateText({
+        name = "Dynamic Tab",
+        text = "This tab was added after the window opened. The bottom dock expands automatically.",
+    })
+end)
+
+Window:Notify({
+    title = "Bottom Dock",
+    content = "The horizontal sidebar dock is ready.",
+    duration = 4,
+})
