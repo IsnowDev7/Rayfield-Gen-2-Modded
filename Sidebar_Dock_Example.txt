@@ -1,14 +1,12 @@
---// IsnowUI Bottom Sidebar Dock Example
---// This uses the local uncommitted SidebarDock implementation.
---// After publishing, load the IsnowUI raw URL from GitHub.
+--// IsnowUI Outside Bottom Horizontal Sidebar Example
 
 local IsnowUI = loadstring(game:HttpGet(
     "https://raw.githubusercontent.com/IsnowDev7/Rayfield-Gen-2-Modded/main/IsnowUI"
 ))()
 
 local Window = IsnowUI:CreateWindow({
-    name = "Bottom Dock Demo",
-    subtitle = "Landscape sidebar",
+    name = "Outside Bottom Dock",
+    subtitle = "Horizontal Sidebar Demo",
     icon = "lucide:layout-dashboard",
 
     sidebarLayout = true,
@@ -20,71 +18,214 @@ local Window = IsnowUI:CreateWindow({
     configuration = {
         autoSave = false,
         autoLoad = false,
-        customFolder = "BottomDockDemo",
+        customFolder = "OutsideBottomDockDemo",
         fileName = "settings",
     },
 })
 
-local Home = Window:CreateTab({
-    name = "Home",
-    icon = "lucide:house",
+-- Dashboard
+local Dashboard = Window:CreateTab({
+    name = "Dashboard",
+    icon = "lucide:layout-dashboard",
 })
 
-Home:CreateDivider({
-    text = "HOME",
+Dashboard:CreateSection({
+    name = "Overview",
 })
 
-Home:CreateText({
+Dashboard:CreateText({
     name = "Status",
-    text = "The sidebar is centered at the bottom and uses a horizontal layout.",
+    text = "The horizontal sidebar is outside the bottom-middle of the window.",
 })
 
+Dashboard:CreateButton({
+    name = "Test Notification",
+    callback = function()
+        Window:Notify({
+            title = "Dashboard",
+            content = "The bottom horizontal sidebar is working.",
+            duration = 3,
+        })
+    end,
+})
+
+-- Features
+local Features = Window:CreateTab({
+    name = "Features",
+    icon = "lucide:zap",
+})
+
+Features:CreateSection({
+    name = "Automation",
+})
+
+Features:CreateToggle({
+    name = "Auto Farm",
+    default = false,
+    callback = function(value)
+        print("Auto Farm:", value)
+    end,
+})
+
+Features:CreateToggle({
+    name = "Auto Collect",
+    default = false,
+    callback = function(value)
+        print("Auto Collect:", value)
+    end,
+})
+
+Features:CreateSlider({
+    name = "Delay",
+    min = 1,
+    max = 60,
+    default = 5,
+    suffix = " seconds",
+    callback = function(value)
+        print("Delay:", value)
+    end,
+})
+
+-- Pets
 local Pets = Window:CreateTab({
     name = "Pets",
     icon = "lucide:paw-print",
 })
 
-Pets:CreateDivider({
-    text = "PETS",
+Pets:CreateSection({
+    name = "Pet Selection",
 })
 
 Pets:CreateDropdown({
-    name = "Pet",
-    options = { "Dog", "Cat", "Bunny" },
+    name = "Select Pet",
+    options = {
+        "Dog",
+        "Cat",
+        "Bunny",
+        "Fox",
+        "Dragon",
+    },
+    callback = function(value)
+        print("Selected pet:", value)
+    end,
 })
 
+Pets:CreateButton({
+    name = "Equip Selected Pet",
+    callback = function()
+        print("Equip selected pet")
+    end,
+})
+
+-- Trading
+local Trading = Window:CreateTab({
+    name = "Trading",
+    icon = "lucide:arrow-left-right",
+})
+
+Trading:CreateSection({
+    name = "Trade Settings",
+})
+
+Trading:CreateDropdown({
+    name = "Select Player",
+    options = {
+        "Player One",
+        "Player Two",
+        "Player Three",
+    },
+    callback = function(value)
+        print("Selected player:", value)
+    end,
+})
+
+Trading:CreateDropdown({
+    name = "Select Item",
+    options = {
+        "Dog",
+        "Cat",
+        "Dragon",
+        "Golden Egg",
+    },
+    callback = function(value)
+        print("Selected item:", value)
+    end,
+})
+
+Trading:CreateInput({
+    name = "Amount",
+    placeholder = "Enter amount",
+    callback = function(value)
+        print("Trade amount:", value)
+    end,
+})
+
+Trading:CreateToggle({
+    name = "Auto Trade",
+    default = false,
+    callback = function(value)
+        print("Auto Trade:", value)
+    end,
+})
+
+-- Settings
 local Settings = Window:CreateTab({
     name = "Settings",
     icon = "lucide:settings",
 })
 
-Settings:CreateDivider({
-    text = "SETTINGS",
+Settings:CreateSection({
+    name = "Optimization",
 })
 
 Settings:CreateToggle({
-    name = "Example Toggle",
+    name = "Reduce Lag",
     default = false,
     callback = function(value)
-        print("Example Toggle:", value)
+        print("Reduce Lag:", value)
     end,
 })
 
--- Add more tabs later. The dock recalculates its width automatically.
-task.delay(2, function()
-    local Extra = Window:CreateTab({
-        name = "Extra",
-        icon = "lucide:sparkles",
-    })
+Settings:CreateToggle({
+    name = "Disable 3D Rendering",
+    default = false,
+    callback = function(value)
+        print("Disable 3D Rendering:", value)
+    end,
+})
 
-    Extra:CreateText({
-        name = "Dynamic Tab",
-        text = "This tab was added after the window opened. The bottom dock expands automatically.",
-    })
-end)
+Settings:CreateToggle({
+    name = "Black Screen",
+    default = false,
+    callback = function(value)
+        print("Black Screen:", value)
+    end,
+})
+
+-- Info
+local Info = Window:CreateTab({
+    name = "Info",
+    icon = "lucide:info",
+})
+
+Info:CreateSection({
+    name = "About",
+})
+
+Info:CreateText({
+    name = "Description",
+    text = "Six tabs are defined so the outside bottom dock can display multiple horizontal tab items.",
+})
+
+Info:CreateButton({
+    name = "Print Dock Status",
+    callback = function()
+        print("SidebarDock is enabled and six tabs are loaded.")
+    end,
+})
 
 Window:Notify({
-    title = "Bottom Dock",
-    content = "The horizontal sidebar dock is ready.",
+    title = "Dock Example Loaded",
+    content = "Dashboard, Features, Pets, Trading, Settings, and Info are ready.",
     duration = 4,
 })
