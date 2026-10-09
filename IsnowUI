@@ -174,37 +174,7 @@ or Q=='rgba')and#R>=3 then return Color3.fromRGB(J(R[1]),J(R[2]),J(R[3]))end loc
 match'^#?(%x%x%x)$'or P:match'^0x(%x%x%x%x%x%x)$'if S then local T,U=pcall(Color3.fromHex,S)if T then return U end end
 if#R>=3 and not Q then if R[1]<=1 and R[2]<=1 and R[3]<=1 then return Color3.new(I(R[1]),I(R[2]),I(R[3]))end return
 Color3.fromRGB(J(R[1]),J(R[2]),J(R[3]))end return nil end local function O(P,Q)if typeof(P)=='Color3'then return P end
-if typeof(P)=='string'then return N(P)or Q end return Q end local function ResolveScannerIcon(Q,R)
-local function asset(V)
-if type(V)=='number' then return V end
-if type(V)=='string' then
-if V=='' or V=='true' or V=='false' then return nil end
-if string.match(V,'^%d+$') or string.sub(V,1,10)=='rbxasset://' or string.sub(V,1,11)=='rbxassetid://' or string.sub(V,1,9)=='rbxthumb://' or string.sub(V,1,7)=='http://' or string.sub(V,1,8)=='https://' or string.sub(V,1,7)=='lucide:' then return V end
-end
-return nil
-end
-local function scan(V,depth)
-if depth>5 or V==nil then return nil end
-local direct=asset(V)if direct~=nil then return direct end
-if typeof(V)=='Instance' then
-for _,K in ipairs({'Icon','Image','Texture','Thumbnail','AssetId','IconId','ImageId','TextureId','ThumbnailId','DecalId'}) do
-local ok,value=pcall(function()return V:GetAttribute(K)end)if ok then local found=asset(value)if found~=nil then return found end end
-local child=V:FindFirstChild(K)if child then local found=scan(child,depth+1)if found~=nil then return found end end
-end
-for _,child in ipairs(V:GetChildren()) do local name=string.lower(child.Name)if string.find(name,'icon',1,true)or string.find(name,'image',1,true)or string.find(name,'texture',1,true)or string.find(name,'thumb',1,true)or string.find(name,'asset',1,true)then local found=scan(child,depth+1)if found~=nil then return found end end end
-elseif typeof(V)=='table' then
-local nested={}
-for key,value in pairs(V) do local name=string.lower(tostring(key))if string.find(name,'icon',1,true)or string.find(name,'image',1,true)or string.find(name,'texture',1,true)or string.find(name,'thumb',1,true)or string.find(name,'asset',1,true)or string.find(name,'decal',1,true)then local found=scan(value,depth+1)if found~=nil then return found end end if type(value)=='table'or typeof(value)=='Instance'then table.insert(nested,value)end end
-for _,value in ipairs(nested) do local found=scan(value,depth+1)if found~=nil then return found end end
-end
-return nil
-end
-local value=scan(Q,0)or asset(R)
-if type(value)=='string'and string.sub(value,1,7)=='lucide:'and type(j)=='table'and type(j.resolve)=='function'then local ok,resolved=pcall(function()return j.resolve(value)end)if ok and resolved then return resolved end end
-if type(value)=='number'or(type(value)=='string'and string.match(value,'^%d+$'))then return 'rbxassetid://'..tostring(value)end
-return value
-end
-function f.new(P,Q)Q=if typeof(Q)=='table'then Q else{}local
+if typeof(P)=='string'then return N(P)or Q end return Q end function f.new(P,Q)Q=if typeof(Q)=='table'then Q else{}local
 R=setmetatable({tab=assert(P,'Missing argument #1 (Tab expected)'),window=P.window,name=Q.name or Q.Name or
 'Color Picker',icon=(Q.icon~=true and Q.icon) or (Q.Icon~=true and Q.Icon),description=Q.description or Q.Description,forgetState=Q.forgetState or Q.
 ForgetState or P.forgetState,callback=Q.callback or Q.Callback or function()end,_isOpen=false},f)R.value=O(Q.color or Q.
@@ -496,7 +466,37 @@ local N,O={},{}for P,Q in M do local R=if typeof(Q)=='table'then Q.name or Q.Nam
 local function M(N,O)if N==nil then return{}end if typeof(N)=='string'then return{N}end if typeof(N)=='table'then local
 P=L(N)if not O and#P>1 then return{P[1]}end return P end return{}end local function N(O,P)local Q={}for R,S in O do if
 table.find(P,S)then table.insert(Q,S)end end return Q end local function O(P,Q)if#P~=#Q then return false end for R,S in
-P do if not table.find(Q,S)then return false end end return true end function f.new(P,Q)Q=if typeof(Q)=='table'then Q
+P do if not table.find(Q,S)then return false end end return true end local function ResolveScannerIcon(Q,R)
+local function asset(V)
+if type(V)=='number' then return V end
+if type(V)=='string' then
+if V=='' or V=='true' or V=='false' then return nil end
+if string.match(V,'^%d+$') or string.sub(V,1,10)=='rbxasset://' or string.sub(V,1,11)=='rbxassetid://' or string.sub(V,1,9)=='rbxthumb://' or string.sub(V,1,7)=='http://' or string.sub(V,1,8)=='https://' or string.sub(V,1,7)=='lucide:' then return V end
+end
+return nil
+end
+local function scan(V,depth)
+if depth>5 or V==nil then return nil end
+local direct=asset(V)if direct~=nil then return direct end
+if typeof(V)=='Instance' then
+for _,K in ipairs({'Icon','Image','Texture','Thumbnail','AssetId','IconId','ImageId','TextureId','ThumbnailId','DecalId'}) do
+local ok,value=pcall(function()return V:GetAttribute(K)end)if ok then local found=asset(value)if found~=nil then return found end end
+local child=V:FindFirstChild(K)if child then local found=scan(child,depth+1)if found~=nil then return found end end
+end
+for _,child in ipairs(V:GetChildren()) do local name=string.lower(child.Name)if string.find(name,'icon',1,true)or string.find(name,'image',1,true)or string.find(name,'texture',1,true)or string.find(name,'thumb',1,true)or string.find(name,'asset',1,true)then local found=scan(child,depth+1)if found~=nil then return found end end end
+elseif typeof(V)=='table' then
+local nested={}
+for key,value in pairs(V) do local name=string.lower(tostring(key))if string.find(name,'icon',1,true)or string.find(name,'image',1,true)or string.find(name,'texture',1,true)or string.find(name,'thumb',1,true)or string.find(name,'asset',1,true)or string.find(name,'decal',1,true)then local found=scan(value,depth+1)if found~=nil then return found end end if type(value)=='table'or typeof(value)=='Instance'then table.insert(nested,value)end end
+for _,value in ipairs(nested) do local found=scan(value,depth+1)if found~=nil then return found end end
+end
+return nil
+end
+local value=scan(Q,0)or asset(R)
+if type(value)=='string'and string.sub(value,1,7)=='lucide:'and type(j)=='table'and type(j.resolve)=='function'then local ok,resolved=pcall(function()return j.resolve(value)end)if ok and resolved then return resolved end end
+if type(value)=='number'or(type(value)=='string'and string.match(value,'^%d+$'))then return 'rbxassetid://'..tostring(value)end
+return value
+end
+function f.new(P,Q)Q=if typeof(Q)=='table'then Q
 else{}local R,S=Q.options or Q.Options or{},Q.multiSelect or Q.MultiSelect or Q.MultipleOptions or false local T=
 setmetatable({tab=assert(P,'Missing argument #1 (Tab expected)'),window=P.window,name=Q.name or Q.Name or'Dropdown',icon
 =(Q.icon~=true and Q.icon) or (Q.Icon~=true and Q.Icon),description=Q.description or Q.Description,forgetState=Q.forgetState or Q.ForgetState or P.forgetState
