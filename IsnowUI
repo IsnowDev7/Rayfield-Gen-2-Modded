@@ -496,6 +496,12 @@ if type(value)=='string'and string.sub(value,1,7)=='lucide:'and type(j)=='table'
 if type(value)=='number'or(type(value)=='string'and string.match(value,'^%d+$'))then return 'rbxassetid://'..tostring(value)end
 return value
 end
+local function StoreOptionIcon(T,option,label)
+if not T.showOptionIcons then return end
+local icon=ResolveScannerIcon(option,label)
+if type(T.optionIconResolver)=='function' then local ok,resolved=pcall(T.optionIconResolver,label,option)if ok and resolved~=nil then icon=resolved end end
+if icon~=nil then T.optionIcons[label]=icon end
+end
 function f.new(P,Q)Q=if typeof(Q)=='table'then Q
 else{}local R,S=Q.options or Q.Options or{},Q.multiSelect or Q.MultiSelect or Q.MultipleOptions or false local T=
 setmetatable({tab=assert(P,'Missing argument #1 (Tab expected)'),window=P.window,name=Q.name or Q.Name or'Dropdown',icon
@@ -503,7 +509,7 @@ setmetatable({tab=assert(P,'Missing argument #1 (Tab expected)'),window=P.window
 ,flag=Q.flag or Q.Flag or(not(Q.forgetState or Q.ForgetState or P.forgetState)and i.deriveFlagFromName(Q.name or Q.Name
 or'Dropdown')or nil),callback=Q.callback or Q.Callback or function()end,options=L(R),multiSelect=S,placeholderText=l.
 resolve(Q.placeholder or Q.Placeholder or'None'),value=M(Q.value or Q.Value or Q.currentOption or Q.CurrentOption,S),
-_isOpen=false,_optionFrames={},optionColors=Q.optionColors or Q.OptionColors or Q.colors or Q.Colors or{},optionIcons={},showOptionIcons=Q.icon==true or Q.Icon==true,optionIconResolver=Q.iconResolver or Q.IconResolver or Q.getIcon or Q.GetIcon},f)for _,option in R do if typeof(option)=='table'then local label=option.name or option.Name or option.text or option.Text or option.label or option.Label or option.value or option.Value or option[1] local color=option.color or option.Color or option.labelColor or option.LabelColor or option[2] if typeof(label)=='string'and(color~=nil)then T.optionColors[label]=color end if T.showOptionIcons then local icon=ResolveScannerIcon(option,label)if type(T.optionIconResolver)=='function' then local ok,resolved=pcall(T.optionIconResolver,label,option)if ok and resolved~=nil then icon=resolved end end if icon~=nil then T.optionIcons[label]=icon end end end end T._desiredValue=T.value T.value=N(T.value,T.options)T.window:_registerControl(T)T.main
+_isOpen=false,_optionFrames={},optionColors=Q.optionColors or Q.OptionColors or Q.colors or Q.Colors or{},optionIcons={},showOptionIcons=Q.icon~=false and Q.Icon~=false,optionIconResolver=Q.iconResolver or Q.IconResolver or Q.getIcon or Q.GetIcon},f)for _,option in R do if typeof(option)=='table'then local label=option.name or option.Name or option.text or option.Text or option.label or option.Label or option.value or option.Value or option[1] local color=option.color or option.Color or option.labelColor or option.LabelColor or option[2] if typeof(label)=='string'and(color~=nil)then T.optionColors[label]=color end StoreOptionIcon(T,option,label) end end T._desiredValue=T.value T.value=N(T.value,T.options)T.window:_registerControl(T)T.main
 =T.window:Create('Frame',{Size=UDim2.new(1,-20,0,41),BorderSizePixel=0,Name=T.name,BackgroundTransparency=1,Parent=T.tab
 .tabPage})T.top=T.window:Create('Frame',{Size=UDim2.new(1,0,0,41),Position=UDim2.fromScale(0,0),BorderSizePixel=0,
 BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,ZIndex=1,Parent=T.main},{BackgroundTransparency=
@@ -671,16 +677,7 @@ function f._reindexOptions(ac)for ad,ae in ac._optionFrames do ae.frame.LayoutOr
 ac,ad,ae,af)ad.name=ae ad.title.Text=ae ad.frame.LayoutOrder=af end function f._destroyOptionsFrom(ac,ad)local ae,af={},
 {}for ag=#ac._optionFrames,ad,-1 do local ah=ac._optionFrames[ag]table.insert(ae,ah.frame)if ah.connections then table.
 move(ah.connections,1,#ah.connections,#af+1,af)ah.connections=nil end ac._optionFrames[ag]=nil end ac.window:
-DisconnectMany(ac,af)ac.window:DestroySubtrees(ae)end function f.Refresh(ac,ad)ac.options=L(ad or{})local ae,af,ag=ac:
-_deriveSelection(),#ac._optionFrames,#ac.options for ah=1,math.min(af,ag)do ac:_rebindOption(ac._optionFrames[ah],ac.
-options[ah],ah)end for ah=af+1,ag do local ai=ac._buildOption(ac.options[ah])ai.frame.LayoutOrder=ah table.insert(ac.
-_optionFrames,ai)end if ag<af then ac:_destroyOptionsFrom(ag+1)end for ah,ai in ac._optionFrames do ac.
-_renderOptionState(ai,false)end ac._updateSelectedLabel()ac:_applyFilter(if ac._searchOpen then ac.searchInput.Text else
-'')if ae then ac.window:_runGuarded(ac,ac.callback,ac:_callbackValue())ac.window:_persist(ac)end end function f.Add(ac,
-ad)if typeof(ad)~='string'or ad==''then return end if table.find(ac.options,ad)then return end table.insert(ac.options,
-ad)local ae=ac._buildOption(ad)table.insert(ac._optionFrames,ae)local af=ac:_deriveSelection()if ac._isOpen then ac.
-_renderOptionState(ae,true)end ac:_applyFilter(if ac._searchOpen then ac.searchInput.Text else'')if af then ac.
-_updateSelectedLabel()ac.window:_runGuarded(ac,ac.callback,ac:_callbackValue())ac.window:_persist(ac)end end function f.
+DisconnectMany(ac,af)ac.window:DestroySubtrees(ae)end function f.Refresh(ac,ad)local keep=ac:_deriveSelection()ac.options=L(ad or{})table.clear(ac.optionIcons)for _,item in ad or{} do local label=typeof(item)=='table'and(item.name or item.Name or item.text or item.Text or item.label or item.Label or item.value or item.Value or item[1])or item StoreOptionIcon(ac,item,label)end ac:_destroyOptionsFrom(1)for index,item in ac.options do local option=ac._buildOption(item)option.frame.LayoutOrder=index table.insert(ac._optionFrames,option)end ac.value=N(keep,ac.options)for _,option in ac._optionFrames do ac._renderOptionState(option,false)end ac._updateSelectedLabel()ac:_applyFilter(if ac._searchOpen then ac.searchInput.Text else '')if keep then ac.window:_runGuarded(ac,ac.callback,ac:_callbackValue())ac.window:_persist(ac)end end function f.Add(ac,ad)local label=typeof(ad)=='table'and(ad.name or ad.Name or ad.text or ad.Text or ad.label or ad.Label or ad.value or ad.Value or ad[1])or ad if type(label)~='string'or label==''then return end if table.find(ac.options,label)then return end table.insert(ac.options,ad)StoreOptionIcon(ac,ad,label)local ae=ac._buildOption(label)table.insert(ac._optionFrames,ae)local af=ac:_deriveSelection()if ac._isOpen then ac._renderOptionState(ae,true)end ac:_applyFilter(if ac._searchOpen then ac.searchInput.Text else '')if af then ac._updateSelectedLabel()ac.window:_runGuarded(ac,ac.callback,ac:_callbackValue())ac.window:_persist(ac)end end function f.
 Remove(ac,ad)local ae=table.find(ac.options,ad)if not ae then return end table.remove(ac.options,ae)for af,ag in ac.
 _optionFrames do if ag.name==ad then ac:_destroyOption(ag)table.remove(ac._optionFrames,af)ac:_reindexOptions()break end
 end if ac._desiredValue then local af=table.find(ac._desiredValue,ad)if af then table.remove(ac._desiredValue,af)end end
